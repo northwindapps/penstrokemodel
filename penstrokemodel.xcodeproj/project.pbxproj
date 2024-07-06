@@ -19,6 +19,9 @@
 		2B88692C2C38CF0400419C85 /* pen_stroke_model.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 2B8868EF2C38C78C00419C85 /* pen_stroke_model.tflite */; };
 		2B88692D2C38CF2200419C85 /* pen_stroke_model.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 2B8868EF2C38C78C00419C85 /* pen_stroke_model.tflite */; };
 		2B88692E2C38CF2300419C85 /* pen_stroke_model.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 2B8868EF2C38C78C00419C85 /* pen_stroke_model.tflite */; };
+		2B8869582C39899E00419C85 /* BaseController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B8869572C39899E00419C85 /* BaseController.swift */; };
+		2B88695A2C3989C900419C85 /* DataInjection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B8869592C3989C900419C85 /* DataInjection.swift */; };
+		2B88695C2C398A5900419C85 /* CustomCanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B88695B2C398A5900419C85 /* CustomCanvasView.swift */; };
 		F73DA3F8E202E9E743623969 /* Pods_penstrokemodel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F2964705EA826B6B8B07071 /* Pods_penstrokemodel.framework */; };
 /* End PBXBuildFile section */
 
@@ -54,6 +57,9 @@
 		2B8868DE2C384F4300419C85 /* penstrokemodelUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = penstrokemodelUITests.swift; sourceTree = "<group>"; };
 		2B8868E02C384F4300419C85 /* penstrokemodelUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = penstrokemodelUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		2B8868EF2C38C78C00419C85 /* pen_stroke_model.tflite */ = {isa = PBXFileReference; lastKnownFileType = file; path = pen_stroke_model.tflite; sourceTree = "<group>"; };
+		2B8869572C39899E00419C85 /* BaseController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseController.swift; sourceTree = "<group>"; };
+		2B8869592C3989C900419C85 /* DataInjection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataInjection.swift; sourceTree = "<group>"; };
+		2B88695B2C398A5900419C85 /* CustomCanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomCanvasView.swift; sourceTree = "<group>"; };
 		4953BBCDB4B9F567EDB7E29B /* Pods-penstrokemodel.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-penstrokemodel.release.xcconfig"; path = "Target Support Files/Pods-penstrokemodel/Pods-penstrokemodel.release.xcconfig"; sourceTree = "<group>"; };
 		5F2964705EA826B6B8B07071 /* Pods_penstrokemodel.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_penstrokemodel.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8A516646752F5CFF2FDCB2B6 /* Pods-penstrokemodel.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-penstrokemodel.debug.xcconfig"; path = "Target Support Files/Pods-penstrokemodel/Pods-penstrokemodel.debug.xcconfig"; sourceTree = "<group>"; };
@@ -113,6 +119,9 @@
 				2B8868BD2C384F4000419C85 /* AppDelegate.swift */,
 				2B8868BF2C384F4000419C85 /* SceneDelegate.swift */,
 				2B8868C12C384F4000419C85 /* ViewController.swift */,
+				2B8869592C3989C900419C85 /* DataInjection.swift */,
+				2B88695B2C398A5900419C85 /* CustomCanvasView.swift */,
+				2B8869572C39899E00419C85 /* BaseController.swift */,
 				2B8868C32C384F4000419C85 /* Main.storyboard */,
 				2B8868C62C384F4300419C85 /* Assets.xcassets */,
 				2B8868C82C384F4300419C85 /* LaunchScreen.storyboard */,
@@ -336,7 +345,10 @@
 			files = (
 				2B8868C22C384F4000419C85 /* ViewController.swift in Sources */,
 				2B8868BE2C384F4000419C85 /* AppDelegate.swift in Sources */,
+				2B8869582C39899E00419C85 /* BaseController.swift in Sources */,
+				2B88695C2C398A5900419C85 /* CustomCanvasView.swift in Sources */,
 				2B8868C02C384F4000419C85 /* SceneDelegate.swift in Sources */,
+				2B88695A2C3989C900419C85 /* DataInjection.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -444,7 +456,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -505,7 +517,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
