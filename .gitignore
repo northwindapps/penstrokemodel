@@ -1,0 +1,94 @@
+/Newcalendar/Assets.xcassets/*
+/Newcalendar/GoogleService-Info.plist
+# Xcode
+.DS_Store
+build/
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+*.xcworkspace
+!default.xcworkspace
+xcuserdata
+
+# Swift Package Manager
+/.build/
+
+# Pods - for those using CocoaPods
+Pods/
+# Comment out if you're not using CocoaPods
+
+# Carthage - for those using Carthage
+/Carthage/Build/
+
+# fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+
+# App distribution
+*.ipa
+*.xcarchive
+
+# Cocoapods artifacts
+Pods/
+Podfile.lock
+
+# Compiled source
+*.mo
+*.cur
+*.apk
+*.o
+*.obj
+*.dll
+*.exe
+
+# Generated files
+*.hmap
+*.ipa
+*.xcuserstate
+*.xccheckout
+*.moved-aside
+
+# Misc
+*.xcuserdatad/
+*.xccheckout
+*.xcscmblueprint
+DerivedData/
+.idea/
+
+# App specific
+# Remove if not using Realm.io
+*.realm
+
+# Remove this section if you don't have a project specific to a platform
+# platform/
+# *.platform/
+# Don't remove or commit this line
+# !default.platform/
+
+# MobileVLCKit
+MobileVLCKit/
+
+# Others
+*.hprof
+*.orig
+*.log
+*.nib~
+*.swp
+*~
+
+# Xcode
+*.xcuserstate
+project.xcworkspace/
+
+# Cocoapods
+# Pods/
+
+# Carthage
+Carthage/Checkouts
+Carthage/Build
