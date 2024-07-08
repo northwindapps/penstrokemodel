@@ -21,7 +21,7 @@ class CustomCanvasView: PKCanvasView {
         self.dataManager = dataManager
         self.annotation = annotation
         // Initialize model handler
-        modelHandler = StrokeModelHandler(modelName: "pen_stroke_model_auv2")
+        modelHandler = StrokeModelHandler(modelName: "pen_stroke_model_auv3")
         super.init(frame: .zero)
     }
 
@@ -125,7 +125,7 @@ class CustomCanvasView: PKCanvasView {
             performPrediction(pre_x: dataManager.x_coordinates.compactMap{Float($0)}, pre_y: dataManager.y_coordinates.compactMap{Float($0)}, pre_time: dataManager.timeStamps.compactMap{Float($0)})
             
             self.deleteData()
-            //self.drawing = PKDrawing()
+            self.drawing = PKDrawing()
             
 //            if aggregatedData.count > 0{
 //                performPrediction(pre_x: aggregatedData[0].xCoordinates.compactMap{Float($0)}, pre_y: aggregatedData[0].yCoordinates.compactMap{Float($0)}, pre_time: aggregatedData[0].timeStamps.compactMap{Float($0)})
@@ -202,7 +202,7 @@ class CustomCanvasView: PKCanvasView {
     }
     
     func performPrediction(pre_x: [Float], pre_y: [Float], pre_time: [Float]) {
-            if let (label,value) = modelHandler.performPrediction(pre_x: pre_x, pre_y: pre_y, pre_time: pre_time, maxLength: 65) {
+            if let (label,value) = modelHandler.performPrediction(pre_x: pre_x, pre_y: pre_y, pre_time: pre_time, maxLength: 68) {
                 
 //                if value > 0.80{
                     print("Predicted label: \(label)")

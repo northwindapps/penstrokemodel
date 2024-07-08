@@ -73,13 +73,35 @@ class StrokeModelHandler {
         
         return velocity
     }
-
-    func padVelocity(_ velocity: [Float], toLength length: Int) -> [Float] {
-        var paddedVelocity = velocity
-        if paddedVelocity.count < length {
-            paddedVelocity.append(contentsOf: Array(repeating: 0.0, count: length - paddedVelocity.count))
+    
+    private func calculateVelocity2(x: [Float], y: [Float], timestamps: [Float]) -> (x_vel: [Float], y_vel: [Float]) {
+        guard x.count > 1 && y.count > 1 && timestamps.count > 1 else {
+            print("Insufficient data to calculate velocity. Each input array must have at least 2 elements.")
+            return ([], [])
         }
-        return paddedVelocity
+        
+        var x_vel = [Float]()
+        var y_vel = [Float]()
+        
+        for i in 0..<(x.count - 1) {
+            let delta_x = x[i + 1] - x[i]
+            let delta_y = y[i + 1] - y[i]
+            let delta_t = timestamps[i + 1] - timestamps[i]
+            
+            // Avoid division by zero in delta_t
+            let delta_t_safe = delta_t == 0 ? 1e-10 : delta_t
+            
+            let vel_x = delta_x / delta_t_safe
+            let vel_y = delta_y / delta_t_safe
+            
+            x_vel.append(vel_x)
+            y_vel.append(vel_y)
+        }
+        
+        x_vel.append(0.0)
+        y_vel.append(0.0)
+        
+        return (x_vel, y_vel)
     }
 
     private func preprocessInputData(xCoordinates: [Float], yCoordinates: [Float], timeStamps: [Float]) -> [Float32] {
@@ -91,13 +113,12 @@ class StrokeModelHandler {
         let normalizedYCoordinates = minMaxScale(input: yCoordinates)
         let normalizedTimeStamps = minMaxScale(input: timeStamps)
         
-        var velocities = calculateVelocity(x: normalizedXCoordinates, y: normalizedYCoordinates, timestamps: normalizedTimeStamps)
+        var (vx_ary, vy_ary) = calculateVelocity2(x: normalizedXCoordinates, y: normalizedYCoordinates, timestamps: normalizedTimeStamps)
         
-        velocities = padVelocity(velocities, toLength: 65)
 
         var inputData: [Float32] = []
         for i in 0..<xCoordinates.count {
-            inputData.append(contentsOf: [Float32(normalizedXCoordinates[i]), Float32(normalizedYCoordinates[i]), Float32(normalizedTimeStamps[i]), Float32(velocities[i])])
+            inputData.append(contentsOf: [Float32(normalizedXCoordinates[i]), Float32(normalizedYCoordinates[i]), Float32(normalizedTimeStamps[i]), Float32(vx_ary[i]), Float32(vy_ary[i])])
         }
         return inputData
     }
@@ -109,7 +130,7 @@ class StrokeModelHandler {
         
         do {
             let paddedInputData = padInputData(inputData, toLength: maxLength)
-            try interpreter.resizeInput(at: 0, to: [1, maxLength, 4])
+            try interpreter.resizeInput(at: 0, to: [1, maxLength, 5])
             try interpreter.allocateTensors()
             
           
@@ -134,7 +155,7 @@ class StrokeModelHandler {
 
     private func padInputData(_ inputData: [Float32], toLength length: Int) -> [Float32]? {
         let paddingValue: Float32 = 0.0
-        let currentLength = inputData.count / 4 // Assuming each entry has x, y, timestamp, and velocity
+        let currentLength = inputData.count / 5 // Assuming each entry has x, y, timestamp, and velocity x and y
         let requiredPadding = length - currentLength
         
         var paddedData = inputData
@@ -147,7 +168,7 @@ class StrokeModelHandler {
         
         // Pad the data
         for _ in 0..<requiredPadding {
-            paddedData.append(contentsOf: [paddingValue, paddingValue, paddingValue, paddingValue]) // Assuming four values per entry x,y,time,velocity
+            paddedData.append(contentsOf: [paddingValue, paddingValue, paddingValue, paddingValue, paddingValue]) // Assuming four values per entry x,y,time,velocity
         }
         
         return paddedData
