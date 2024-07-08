@@ -13,12 +13,15 @@ class CustomCanvasView: PKCanvasView {
     var startTime: TimeInterval = 0
     private var dataManager: DataManagerProtocol
     private var annotation: String
+    var modelHandler: StrokeModelHandler!
     
 
     // Dependency Injection through initializer
     init(dataManager: DataManagerProtocol,annotation: String = "") {
         self.dataManager = dataManager
         self.annotation = annotation
+        // Initialize model handler
+        modelHandler = StrokeModelHandler(modelName: "pen_stroke_model_auv2")
         super.init(frame: .zero)
     }
 
@@ -36,6 +39,17 @@ class CustomCanvasView: PKCanvasView {
                 startTime = timestamp // set the start time to the timestamp of the first touch
             }
             let relativeTimestamp = (timestamp - startTime) * 1000 // convert to milliseconds
+            
+            
+            let pressure = touch.force
+            let maximumPossibleForce = touch.maximumPossibleForce
+            
+            
+            if self.traitCollection.forceTouchCapability == .available {
+                let normalizedPressure = pressure / maximumPossibleForce
+            }
+        
+            
             //print("tag: \(self.tag)")
             //print("Touch began at: \(location), timestamp: \(relativeTimestamp) ms")
             
@@ -48,6 +62,7 @@ class CustomCanvasView: PKCanvasView {
             dataManager.y_coordinates.append("\(location.y)")
             dataManager.frame_widths.append("\(self.frame.width)")
             dataManager.frame_heights.append("\(self.frame.height)")
+            dataManager.pressures.append("\(pressure)")
 
         }
     }
@@ -59,6 +74,11 @@ class CustomCanvasView: PKCanvasView {
             let timestamp = touch.timestamp
             let relativeTimestamp = (timestamp - startTime) * 1000 // convert to milliseconds
             //print("Touch moved to: \(location), timestamp: \(relativeTimestamp) ms")
+            
+            
+            let pressure = touch.force
+            let maximumPossibleForce = touch.maximumPossibleForce
+            let normalizedPressure = pressure / maximumPossibleForce
             
             //store data
             dataManager.timeStamps.append(String(relativeTimestamp))
@@ -80,6 +100,10 @@ class CustomCanvasView: PKCanvasView {
             let relativeTimestamp = (timestamp - startTime) * 1000 // convert to milliseconds
             //print("Touch ended at: \(location), timestamp: \(relativeTimestamp) ms")
             
+            let pressure = touch.force
+            let maximumPossibleForce = touch.maximumPossibleForce
+            let normalizedPressure = pressure / maximumPossibleForce
+            
             //store data
             dataManager.timeStamps.append(String(relativeTimestamp))
             dataManager.events.append("end")
@@ -97,7 +121,23 @@ class CustomCanvasView: PKCanvasView {
             let aggregatedData = DataManagerRepository.shared.sumAllData()
             // Print aggregated data
             print("Data Count: \(aggregatedData.count)")
+            
+            performPrediction(pre_x: dataManager.x_coordinates.compactMap{Float($0)}, pre_y: dataManager.y_coordinates.compactMap{Float($0)}, pre_time: dataManager.timeStamps.compactMap{Float($0)})
+            
             self.deleteData()
+            //self.drawing = PKDrawing()
+            
+//            if aggregatedData.count > 0{
+//                performPrediction(pre_x: aggregatedData[0].xCoordinates.compactMap{Float($0)}, pre_y: aggregatedData[0].yCoordinates.compactMap{Float($0)}, pre_time: aggregatedData[0].timeStamps.compactMap{Float($0)})
+//            }
+//            
+//            if aggregatedData.count > 1{
+//                performPrediction(pre_x: (aggregatedData[0].xCoordinates + aggregatedData[1].xCoordinates).compactMap{Float($0)}, pre_y: (aggregatedData[0].yCoordinates + aggregatedData[1].yCoordinates).compactMap{Float($0)}, pre_time: (aggregatedData[0].timeStamps + aggregatedData[1].timeStamps).compactMap{Float($0)})
+//                
+//                DataManagerRepository.shared.removeAllDataManager()
+//            }
+
+            
         }
     }
 
@@ -160,5 +200,20 @@ class CustomCanvasView: PKCanvasView {
         dataManager.frame_widths.removeAll()
         dataManager.frame_heights.removeAll()
     }
+    
+    func performPrediction(pre_x: [Float], pre_y: [Float], pre_time: [Float]) {
+            if let (label,value) = modelHandler.performPrediction(pre_x: pre_x, pre_y: pre_y, pre_time: pre_time, maxLength: 65) {
+                
+//                if value > 0.80{
+                    print("Predicted label: \(label)")
+                    print("Predicted value: \(value)")
+//                }
+                if value > 0.9{
+                    DataManagerRepository.shared.removeDataManager()
+                }
+            } else {
+                print("Prediction failed")
+            }
+        }
     
 }
