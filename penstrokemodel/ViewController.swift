@@ -7,7 +7,7 @@ class ViewController: BaseController, PKCanvasViewDelegate,PKToolPickerObserver 
     var canvasView: CustomCanvasView!
     var toolPicker: PKToolPicker!
     var interpreter: Interpreter?
-    let labels =  ["a", "u", "v"]
+    var productsLabel: UILabel!
     //["a", "b", "c", "d", "e", "f", "h", "i", "j", "k", "m", "n", "o", "p", "q", "r", "t", "u", "v", "w"]
     
     override func viewDidLoad() {
@@ -33,6 +33,24 @@ class ViewController: BaseController, PKCanvasViewDelegate,PKToolPickerObserver 
         toolPicker.addObserver(self)
         canvasView.becomeFirstResponder()
         
+        // Set up the label
+        productsLabel = UILabel()
+        productsLabel.translatesAutoresizingMaskIntoConstraints = false
+        productsLabel.numberOfLines = 0
+        productsLabel.textAlignment = .center
+        productsLabel.font = UIFont.systemFont(ofSize: 32)
+        productsLabel.textColor = .black
+        productsLabel.backgroundColor = .clear
+
+        self.view.addSubview(productsLabel)
+
+        // Set up constraints
+        NSLayoutConstraint.activate([
+            productsLabel.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 20),
+            productsLabel.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 20),
+            productsLabel.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -20)
+        ])
+        
         
     }
     
@@ -48,7 +66,16 @@ class ViewController: BaseController, PKCanvasViewDelegate,PKToolPickerObserver 
         }
         canvasView.allowsFingerDrawing = true
         canvasView.addObserver(self, forKeyPath: "tool", options: .new, context: nil)
+        
+        
     }
+    
+    func updateProductsLabel() {
+            if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+                // Update the label with the current products data
+                productsLabel.text = canvasView.products.joined(separator: "")
+            }
+        }
 }
     
     

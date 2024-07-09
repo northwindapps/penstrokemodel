@@ -14,14 +14,24 @@ class CustomCanvasView: PKCanvasView {
     private var dataManager: DataManagerProtocol
     private var annotation: String
     var modelHandler: StrokeModelHandler!
+    var products: [String] {
+        didSet {
+            print("Products changed to: \(products)")
+            if let viewController = window?.rootViewController as? ViewController {
+                viewController.updateProductsLabel()
+            }
+        }
+    }
     
 
     // Dependency Injection through initializer
-    init(dataManager: DataManagerProtocol,annotation: String = "") {
+    init(dataManager: DataManagerProtocol, annotation: String = "", products: [String] = []) {
         self.dataManager = dataManager
         self.annotation = annotation
+        self.products = products
+        
         // Initialize model handler
-        modelHandler = StrokeModelHandler(modelName: "pen_stroke_model_auv3")
+        modelHandler = StrokeModelHandler(modelName: "pen_stroke_model_aegnorsuv")
         super.init(frame: .zero)
     }
 
@@ -125,7 +135,7 @@ class CustomCanvasView: PKCanvasView {
             performPrediction(pre_x: dataManager.x_coordinates.compactMap{Float($0)}, pre_y: dataManager.y_coordinates.compactMap{Float($0)}, pre_time: dataManager.timeStamps.compactMap{Float($0)})
             
             self.deleteData()
-            self.drawing = PKDrawing()
+            
             
 //            if aggregatedData.count > 0{
 //                performPrediction(pre_x: aggregatedData[0].xCoordinates.compactMap{Float($0)}, pre_y: aggregatedData[0].yCoordinates.compactMap{Float($0)}, pre_time: aggregatedData[0].timeStamps.compactMap{Float($0)})
@@ -202,11 +212,12 @@ class CustomCanvasView: PKCanvasView {
     }
     
     func performPrediction(pre_x: [Float], pre_y: [Float], pre_time: [Float]) {
-            if let (label,value) = modelHandler.performPrediction(pre_x: pre_x, pre_y: pre_y, pre_time: pre_time, maxLength: 68) {
+            if let (label,value) = modelHandler.performPrediction(pre_x: pre_x, pre_y: pre_y, pre_time: pre_time, maxLength: 99) {
                 
 //                if value > 0.80{
                     print("Predicted label: \(label)")
                     print("Predicted value: \(value)")
+                    products.append(label)
 //                }
                 if value > 0.9{
                     DataManagerRepository.shared.removeDataManager()

@@ -3,7 +3,7 @@ import Foundation
 
 class StrokeModelHandler {
     private var interpreter: Interpreter?
-    let labels =  ["a", "u", "v"]
+    let labels =   ["a","e","g","n","o","r","s","u","v"]
     //["a", "b", "c", "d", "e", "f", "h", "i", "j", "k", "m", "n", "o", "p", "q", "r", "t", "u", "v", "w"]
 
     init(modelName: String) {
