@@ -31,7 +31,7 @@ class CustomCanvasView: PKCanvasView {
         self.products = products
         
         // Initialize model handler
-        modelHandler = StrokeModelHandler(modelName: "pen_stroke_model_aegnorsuv")
+        modelHandler = StrokeModelHandler(modelName: "pen_stroke_model")
         super.init(frame: .zero)
     }
 
