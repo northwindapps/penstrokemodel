@@ -34,7 +34,7 @@ class CustomCanvasView: PKCanvasView {
        
         
         // Initialize model handler
-        modelHandler = StrokeModelHandler(modelName: "pen_stroke_model_small")
+        modelHandler = StrokeModelHandler(modelName: "pen_stroke_model0")
         super.init(frame: .zero)
     }
 
@@ -49,7 +49,6 @@ class CustomCanvasView: PKCanvasView {
         if let touch = touches.first {
             let location = touch.location(in: self)
             let timestamp = touch.timestamp
-            print("touched",timestamp)
             if startTime == 0 {
                 startTime = timestamp // set the start time to the timestamp of the first touch
             }
@@ -125,24 +124,6 @@ class CustomCanvasView: PKCanvasView {
             // Set timer
             prediction_timer = Timer.scheduledTimer(withTimeInterval: 0.4, repeats: false) { [weak self] timer in
                 
-                //addData
-                //DataManagerRepository.shared.addDataManager(self!.copyDataManager() as! SharedDataManager)
-                
-//                //sumAllData
-//                let aggregatedData = DataManagerRepository.shared.sumAllData()
-//                // Print aggregated data
-//                print("Data Count: \(aggregatedData.count)")
-//                
-//                var prex = [String]()
-//                var prey = [String]()
-//                var pretime = [String]()
-//                var pevent = [String]()
-//                for sumed in aggregatedData {
-//                    prex += sumed.xCoordinates
-//                    prey += sumed.yCoordinates
-//                    pretime += sumed.timeStamps
-//                    pevent += sumed.events
-//                }
                 self?.handleTimer(prex: self!.dataManager.x_coordinates, prey: self!.dataManager.y_coordinates, pretime: self!.dataManager.timeStamps, event: self!.dataManager.timeStamps)
             }
             
@@ -223,32 +204,24 @@ class CustomCanvasView: PKCanvasView {
     
     
     func performPrediction(pre_x: [Float], pre_y: [Float], pre_time: [Float]) {
-        let aggregatedData = DataManagerRepository.shared.sumAllData()
-//            var x = [Float]()
-//            var y = [Float]()
-//            var time = [Float]()
-//            var r_label = ""
-//            var r_value = 0.0 as Float
-//            x = aggregatedData[0].xCoordinates.compactMap({ Float($0) })
-//            y = aggregatedData[0].yCoordinates.compactMap({ Float($0) })
-//            time = aggregatedData[0].timeStamps.compactMap({ Float($0) })
-            if let (label,value) = modelHandler.performPrediction(pre_x: pre_x, pre_y: pre_y, pre_time: pre_time, maxLength: 38) {
-                if value > 0.87{
-                    //products.removeLast()
-                    products.append(label)
-                    print("Predicted label: \(label)")
-                    print("Predicted value: \(value)")
-                }
-                if value <= 0.87{
-                    //y,i,j,x.. two-stroke group
-                    print("NG Predicted label: \(label)")
-                    print("NG Predicted value: \(value)")
-                }
-    
-            } else {
-                print("Prediction failed")
-                DataManagerRepository.shared.removeAllDataManager()
+        
+        if let (label,value) = modelHandler.performPrediction(pre_x: pre_x, pre_y: pre_y, pre_time: pre_time, maxLength: 38) {
+            if value > 0.87{
+                //products.removeLast()
+                products.append(label)
+                print("Predicted label: \(label)")
+                print("Predicted value: \(value)")
             }
+            if value <= 0.87{
+                //y,i,j,x.. two-stroke group
+                print("NG Predicted label: \(label)")
+                print("NG Predicted value: \(value)")
+            }
+
+        } else {
+            print("Prediction failed")
             DataManagerRepository.shared.removeAllDataManager()
+        }
+        DataManagerRepository.shared.removeAllDataManager()
     }
 }

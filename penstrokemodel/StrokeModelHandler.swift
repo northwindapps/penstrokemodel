@@ -115,6 +115,15 @@ class StrokeModelHandler {
         
         var (vx_ary, vy_ary) = calculateVelocity2(x: normalizedXCoordinates, y: normalizedYCoordinates, timestamps: normalizedTimeStamps)
         
+        //get indices
+        var zeroIndices = normalizedTimeStamps.indices.filter { normalizedTimeStamps[$0] == 0.0 }
+        zeroIndices.removeFirst()
+        
+        for i in zeroIndices{
+            vx_ary[i-1]=0.0
+            vy_ary[i-1]=0.0
+        }
+        
 
         var inputData: [Float32] = []
         for i in 0..<xCoordinates.count {
