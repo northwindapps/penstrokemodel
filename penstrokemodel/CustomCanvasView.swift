@@ -22,16 +22,19 @@ class CustomCanvasView: PKCanvasView {
             }
         }
     }
-    
+    private var timer: Timer?
+    private var prediction_timer: Timer?
+
 
     // Dependency Injection through initializer
     init(dataManager: DataManagerProtocol, annotation: String = "", products: [String] = []) {
         self.dataManager = dataManager
         self.annotation = annotation
         self.products = products
+       
         
         // Initialize model handler
-        modelHandler = StrokeModelHandler(modelName: "pen_stroke_model")
+        modelHandler = StrokeModelHandler(modelName: "pen_stroke_model_small")
         super.init(frame: .zero)
     }
 
@@ -41,10 +44,12 @@ class CustomCanvasView: PKCanvasView {
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
+        cancelTimer()
         startTime = 0
         if let touch = touches.first {
             let location = touch.location(in: self)
             let timestamp = touch.timestamp
+            print("touched",timestamp)
             if startTime == 0 {
                 startTime = timestamp // set the start time to the timestamp of the first touch
             }
@@ -85,11 +90,6 @@ class CustomCanvasView: PKCanvasView {
             let relativeTimestamp = (timestamp - startTime) * 1000 // convert to milliseconds
             //print("Touch moved to: \(location), timestamp: \(relativeTimestamp) ms")
             
-            
-            let pressure = touch.force
-            let maximumPossibleForce = touch.maximumPossibleForce
-            let normalizedPressure = pressure / maximumPossibleForce
-            
             //store data
             dataManager.timeStamps.append(String(relativeTimestamp))
             dataManager.events.append("move")
@@ -110,10 +110,6 @@ class CustomCanvasView: PKCanvasView {
             let relativeTimestamp = (timestamp - startTime) * 1000 // convert to milliseconds
             //print("Touch ended at: \(location), timestamp: \(relativeTimestamp) ms")
             
-            let pressure = touch.force
-            let maximumPossibleForce = touch.maximumPossibleForce
-            let normalizedPressure = pressure / maximumPossibleForce
-            
             //store data
             dataManager.timeStamps.append(String(relativeTimestamp))
             dataManager.events.append("end")
@@ -124,29 +120,32 @@ class CustomCanvasView: PKCanvasView {
             dataManager.frame_widths.append("\(self.frame.width)")
             dataManager.frame_heights.append("\(self.frame.height)")
             
-            //addData
-            DataManagerRepository.shared.addDataManager(self.copyDataManager() as! SharedDataManager)
-            
-            //sumAllData
-            let aggregatedData = DataManagerRepository.shared.sumAllData()
-            // Print aggregated data
-            print("Data Count: \(aggregatedData.count)")
-            
-            performPrediction(pre_x: dataManager.x_coordinates.compactMap{Float($0)}, pre_y: dataManager.y_coordinates.compactMap{Float($0)}, pre_time: dataManager.timeStamps.compactMap{Float($0)})
-            
-            self.deleteData()
             
             
-//            if aggregatedData.count > 0{
-//                performPrediction(pre_x: aggregatedData[0].xCoordinates.compactMap{Float($0)}, pre_y: aggregatedData[0].yCoordinates.compactMap{Float($0)}, pre_time: aggregatedData[0].timeStamps.compactMap{Float($0)})
-//            }
-//            
-//            if aggregatedData.count > 1{
-//                performPrediction(pre_x: (aggregatedData[0].xCoordinates + aggregatedData[1].xCoordinates).compactMap{Float($0)}, pre_y: (aggregatedData[0].yCoordinates + aggregatedData[1].yCoordinates).compactMap{Float($0)}, pre_time: (aggregatedData[0].timeStamps + aggregatedData[1].timeStamps).compactMap{Float($0)})
+            // Set timer
+            prediction_timer = Timer.scheduledTimer(withTimeInterval: 0.4, repeats: false) { [weak self] timer in
+                
+                //addData
+                //DataManagerRepository.shared.addDataManager(self!.copyDataManager() as! SharedDataManager)
+                
+//                //sumAllData
+//                let aggregatedData = DataManagerRepository.shared.sumAllData()
+//                // Print aggregated data
+//                print("Data Count: \(aggregatedData.count)")
 //                
-//                DataManagerRepository.shared.removeAllDataManager()
-//            }
-
+//                var prex = [String]()
+//                var prey = [String]()
+//                var pretime = [String]()
+//                var pevent = [String]()
+//                for sumed in aggregatedData {
+//                    prex += sumed.xCoordinates
+//                    prey += sumed.yCoordinates
+//                    pretime += sumed.timeStamps
+//                    pevent += sumed.events
+//                }
+                self?.handleTimer(prex: self!.dataManager.x_coordinates, prey: self!.dataManager.y_coordinates, pretime: self!.dataManager.timeStamps, event: self!.dataManager.timeStamps)
+            }
+            
             
         }
     }
@@ -155,7 +154,6 @@ class CustomCanvasView: PKCanvasView {
         super.touchesCancelled(touches, with: event)
         if let touch = touches.first {
             let location = touch.location(in: self)
-            //print("Touch cancelled at: \(location)")
         }
     }
     
@@ -211,20 +209,46 @@ class CustomCanvasView: PKCanvasView {
         dataManager.frame_heights.removeAll()
     }
     
+    private func handleTimer(prex: [String], prey: [String], pretime:[String], event:[String]) {
+        performPrediction(pre_x: prex.compactMap{Float($0)}, pre_y: prey.compactMap{Float($0)}, pre_time: pretime.compactMap{Float($0)})
+        self.deleteData()
+    }
+    
+    private func cancelTimer() {
+        prediction_timer?.invalidate()
+        prediction_timer = nil
+        print("timer canceled")
+    }
+    
+    
+    
     func performPrediction(pre_x: [Float], pre_y: [Float], pre_time: [Float]) {
-            if let (label,value) = modelHandler.performPrediction(pre_x: pre_x, pre_y: pre_y, pre_time: pre_time, maxLength: 99) {
-                
-//                if value > 0.80{
+        let aggregatedData = DataManagerRepository.shared.sumAllData()
+//            var x = [Float]()
+//            var y = [Float]()
+//            var time = [Float]()
+//            var r_label = ""
+//            var r_value = 0.0 as Float
+//            x = aggregatedData[0].xCoordinates.compactMap({ Float($0) })
+//            y = aggregatedData[0].yCoordinates.compactMap({ Float($0) })
+//            time = aggregatedData[0].timeStamps.compactMap({ Float($0) })
+            if let (label,value) = modelHandler.performPrediction(pre_x: pre_x, pre_y: pre_y, pre_time: pre_time, maxLength: 38) {
+                if value > 0.87{
+                    //products.removeLast()
+                    products.append(label)
                     print("Predicted label: \(label)")
                     print("Predicted value: \(value)")
-                    products.append(label)
-//                }
-                if value > 0.9{
-                    DataManagerRepository.shared.removeDataManager()
                 }
+                if value <= 0.87{
+                    //y,i,j,x.. two-stroke group
+                    print("NG Predicted label: \(label)")
+                    print("NG Predicted value: \(value)")
+                }
+    
             } else {
                 print("Prediction failed")
+                DataManagerRepository.shared.removeAllDataManager()
             }
-        }
-    
+            DataManagerRepository.shared.removeAllDataManager()
+    }
 }

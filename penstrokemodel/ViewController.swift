@@ -8,7 +8,6 @@ class ViewController: BaseController, PKCanvasViewDelegate,PKToolPickerObserver 
     var toolPicker: PKToolPicker!
     var interpreter: Interpreter?
     var productsLabel: UILabel!
-    //["a", "b", "c", "d", "e", "f", "h", "i", "j", "k", "m", "n", "o", "p", "q", "r", "t", "u", "v", "w"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -71,11 +70,14 @@ class ViewController: BaseController, PKCanvasViewDelegate,PKToolPickerObserver 
     }
     
     func updateProductsLabel() {
-            if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-                // Update the label with the current products data
-                productsLabel.text = canvasView.products.joined(separator: "")
-            }
-        }
+        canvasView.drawing = PKDrawing()
+            productsLabel.text = canvasView.products.joined(separator: "")
+    }
+    
+    func updateProductsLabel2() {
+        canvasView.drawing = PKDrawing()
+            productsLabel.text = canvasView.products.joined(separator: "")
+    }
 }
     
     
