@@ -19,11 +19,31 @@ class StrokeModelHandler {
     }
     
     func performPrediction(pre_x: [Float], pre_y: [Float], pre_time: [Float], maxLength: Int) -> (String, Float)? {
-        let xCoordinates: [Float] = pre_x
-        let yCoordinates: [Float] = pre_y
-        let timeStamps: [Float] = pre_time
+        
+        //merged data previous + current
+        let aggregatedData = DataManagerRepository.shared.sumAllData()
+        if (aggregatedData.first != nil){
+            var xCoordinates: [Float] = aggregatedData.first?.xCoordinates.compactMap{Float($0)} ?? []
+            var yCoordinates: [Float] = aggregatedData.first?.yCoordinates.compactMap{Float($0)} ?? []
+            var timeStamps: [Float] = aggregatedData.first?.timeStamps.compactMap{Float($0)} ?? []
+            xCoordinates += pre_x
+            yCoordinates += pre_y
+            timeStamps += pre_time
+            
+            let inputMergedData = preprocessInputData(xCoordinates: xCoordinates, yCoordinates: yCoordinates, timeStamps: timeStamps)
+            
+            if let predictions = predict(inputData: inputMergedData, maxLength: maxLength) {
+                if let maxIndex = indexOfMax(predictions), let maxValue = maxValue(predictions) {
+                    if maxValue > 0.9{
+                        return (labels[maxIndex], maxValue)
+                    }
+                }
+            }
+            
+        }
 
-        let inputData = preprocessInputData(xCoordinates: xCoordinates, yCoordinates: yCoordinates, timeStamps: timeStamps)
+        let inputData = preprocessInputData(xCoordinates: pre_x, yCoordinates: pre_y, timeStamps: pre_time)
+        
         if let predictions = predict(inputData: inputData, maxLength: maxLength) {
             if let maxIndex = indexOfMax(predictions), let maxValue = maxValue(predictions) {
                 return (labels[maxIndex], maxValue)

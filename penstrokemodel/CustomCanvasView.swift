@@ -35,6 +35,8 @@ class CustomCanvasView: PKCanvasView {
         
         // Initialize model handler
         modelHandler = StrokeModelHandler(modelName: "pen_stroke_model0")
+//        let sharedDataManager = SharedDataManager()
+//        let view = CustomCanvasView(dataManager: sharedDataManager)
         super.init(frame: .zero)
     }
 
@@ -122,7 +124,7 @@ class CustomCanvasView: PKCanvasView {
             
             
             // Set timer
-            prediction_timer = Timer.scheduledTimer(withTimeInterval: 0.4, repeats: false) { [weak self] timer in
+            prediction_timer = Timer.scheduledTimer(withTimeInterval: 0, repeats: false) { [weak self] timer in
                 
                 self?.handleTimer(prex: self!.dataManager.x_coordinates, prey: self!.dataManager.y_coordinates, pretime: self!.dataManager.timeStamps, event: self!.dataManager.timeStamps)
             }
@@ -136,28 +138,6 @@ class CustomCanvasView: PKCanvasView {
         if let touch = touches.first {
             let location = touch.location(in: self)
         }
-    }
-    
-    func addStroke(at points: [CGPoint], with color: UIColor = .black, width: CGFloat = 5.0) {
-            let newStroke = createStroke(at: points, with: color, width: width)
-            var currentDrawing = self.drawing
-            currentDrawing.strokes.append(newStroke)
-            self.drawing = currentDrawing
-    }
-    
-    func createStroke(at points: [CGPoint], with color: UIColor = .black, width: CGFloat = 5.0) -> PKStroke {
-        let ink = PKInk(.pen, color: color)
-        var controlPoints = [PKStrokePoint]()
-
-        for point in points {
-            let strokePoint = PKStrokePoint(location: point, timeOffset: 0, size: CGSize(width: width, height: width), opacity: 1.0, force: 1.0, azimuth: 0, altitude: 0)
-            controlPoints.append(strokePoint)
-        }
-
-        let path = PKStrokePath(controlPoints: controlPoints, creationDate: Date())
-        let stroke = PKStroke(ink: ink, path: path, transform: .identity, mask: nil)
-
-        return stroke
     }
     
     // Configure method to set annotation
@@ -192,6 +172,8 @@ class CustomCanvasView: PKCanvasView {
     
     private func handleTimer(prex: [String], prey: [String], pretime:[String], event:[String]) {
         performPrediction(pre_x: prex.compactMap{Float($0)}, pre_y: prey.compactMap{Float($0)}, pre_time: pretime.compactMap{Float($0)})
+        DataManagerRepository.shared.removeDataManager()
+        DataManagerRepository.shared.addDataManager(self.copyDataManager() as! SharedDataManager)
         self.deleteData()
     }
     
@@ -220,8 +202,8 @@ class CustomCanvasView: PKCanvasView {
 
         } else {
             print("Prediction failed")
-            DataManagerRepository.shared.removeAllDataManager()
+            //DataManagerRepository.shared.removeAllDataManager()
         }
-        DataManagerRepository.shared.removeAllDataManager()
+        //DataManagerRepository.shared.removeAllDataManager()
     }
 }
