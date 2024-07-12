@@ -34,7 +34,7 @@ class CustomCanvasView: PKCanvasView {
        
         
         // Initialize model handler
-        modelHandler = StrokeModelHandler(modelName: "pen_stroke_model0")
+        modelHandler = StrokeModelHandler(modelName: "pen_stroke_modelratio")
         super.init(frame: .zero)
     }
 
@@ -76,7 +76,6 @@ class CustomCanvasView: PKCanvasView {
             dataManager.y_coordinates.append("\(location.y)")
             dataManager.frame_widths.append("\(self.frame.width)")
             dataManager.frame_heights.append("\(self.frame.height)")
-            dataManager.pressures.append("\(pressure)")
 
         }
     }
@@ -118,16 +117,14 @@ class CustomCanvasView: PKCanvasView {
             dataManager.y_coordinates.append("\(location.y)")
             dataManager.frame_widths.append("\(self.frame.width)")
             dataManager.frame_heights.append("\(self.frame.height)")
-            
-            
-            
-            // Set timer
-            prediction_timer = Timer.scheduledTimer(withTimeInterval: 0.4, repeats: false) { [weak self] timer in
-                
-                self?.handleTimer(prex: self!.dataManager.x_coordinates, prey: self!.dataManager.y_coordinates, pretime: self!.dataManager.timeStamps, event: self!.dataManager.timeStamps)
+            //get the stroke length
+            var dis = calculateTraveledDistance()
+            if let last = Float(dataManager.traveled_distances.last ?? ""){
+                dis -= CGFloat(last)
             }
+            dataManager.traveled_distances.append("\(dis)")
             
-            
+            startTimer()
         }
     }
 
@@ -138,26 +135,36 @@ class CustomCanvasView: PKCanvasView {
         }
     }
     
-    func addStroke(at points: [CGPoint], with color: UIColor = .black, width: CGFloat = 5.0) {
-            let newStroke = createStroke(at: points, with: color, width: width)
-            var currentDrawing = self.drawing
-            currentDrawing.strokes.append(newStroke)
-            self.drawing = currentDrawing
+    func startTimer() {
+            prediction_timer = Timer.scheduledTimer(timeInterval: 0.3, target: self, selector: #selector(timerFired), userInfo: nil, repeats: false)
     }
     
-    func createStroke(at points: [CGPoint], with color: UIColor = .black, width: CGFloat = 5.0) -> PKStroke {
-        let ink = PKInk(.pen, color: color)
-        var controlPoints = [PKStrokePoint]()
-
-        for point in points {
-            let strokePoint = PKStrokePoint(location: point, timeOffset: 0, size: CGSize(width: width, height: width), opacity: 1.0, force: 1.0, azimuth: 0, altitude: 0)
-            controlPoints.append(strokePoint)
+    @objc func timerFired() {
+        print("Timer fired!")
+        handleTimer(prex: dataManager.x_coordinates, prey: dataManager.y_coordinates, pretime: dataManager.timeStamps, event: dataManager.events, td: dataManager.traveled_distances)
+    }
+    
+    func calculateTraveledDistance() -> CGFloat {
+    // Ensure coordinates arrays are not empty and have the same length
+    guard dataManager.x_coordinates.count > 1, dataManager.x_coordinates.count == dataManager.y_coordinates.count else {
+            return 0.0
         }
-
-        let path = PKStrokePath(controlPoints: controlPoints, creationDate: Date())
-        let stroke = PKStroke(ink: ink, path: path, transform: .identity, mask: nil)
-
-        return stroke
+        
+        var totalDistance: CGFloat = 0.0
+        
+        for i in 1..<dataManager.x_coordinates.count {
+            if let x1 = Float(dataManager.x_coordinates[i - 1]),
+               let y1 = Float(dataManager.y_coordinates[i - 1]),
+               let x2 = Float(dataManager.x_coordinates[i]),
+               let y2 = Float(dataManager.y_coordinates[i]), dataManager.timeStamps[i] != "0.0" {
+                    let dx = CGFloat(x2 - x1)
+                    let dy = CGFloat(y2 - y1)
+                    let distance = sqrt(dx * dx + dy * dy)
+                    totalDistance += distance
+                }
+        }
+        
+        return totalDistance
     }
     
     // Configure method to set annotation
@@ -175,6 +182,7 @@ class CustomCanvasView: PKCanvasView {
         copy.sample_tags = self.dataManager.sample_tags
         copy.frame_widths = self.dataManager.frame_widths
         copy.frame_heights = self.dataManager.frame_heights
+        copy.traveled_distances = self.dataManager.traveled_distances
         return copy
     }
     
@@ -188,10 +196,11 @@ class CustomCanvasView: PKCanvasView {
         dataManager.y_coordinates.removeAll()
         dataManager.frame_widths.removeAll()
         dataManager.frame_heights.removeAll()
+        dataManager.traveled_distances.removeAll()
     }
     
-    private func handleTimer(prex: [String], prey: [String], pretime:[String], event:[String]) {
-        performPrediction(pre_x: prex.compactMap{Float($0)}, pre_y: prey.compactMap{Float($0)}, pre_time: pretime.compactMap{Float($0)})
+    private func handleTimer(prex: [String], prey: [String], pretime:[String], event:[String],td:[String]) {
+        performPrediction(pre_x: prex.compactMap{Float($0)}, pre_y: prey.compactMap{Float($0)}, pre_time: pretime.compactMap{Float($0)}, pre_td: td.compactMap{Float($0)})
         self.deleteData()
     }
     
@@ -203,9 +212,9 @@ class CustomCanvasView: PKCanvasView {
     
     
     
-    func performPrediction(pre_x: [Float], pre_y: [Float], pre_time: [Float]) {
+    func performPrediction(pre_x: [Float], pre_y: [Float], pre_time: [Float], pre_td:[Float]) {
         
-        if let (label,value) = modelHandler.performPrediction(pre_x: pre_x, pre_y: pre_y, pre_time: pre_time, maxLength: 38) {
+        if let (label,value) = modelHandler.performPrediction(pre_x: pre_x, pre_y: pre_y, pre_time: pre_time, pre_td: pre_td, maxLength: 34) {
             if value > 0.87{
                 //products.removeLast()
                 products.append(label)

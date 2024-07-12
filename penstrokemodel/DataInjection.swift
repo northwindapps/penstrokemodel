@@ -16,8 +16,7 @@ protocol DataManagerProtocol {
     var sample_tags: [String] { get set }
     var frame_widths: [String] { get set }
     var frame_heights: [String] { get set }
-    var pressures: [String] { get set }
-    var maxPressures: [String] { get set }
+    var traveled_distances: [String] { get set }
 }
 
 class SharedDataManager: DataManagerProtocol {
@@ -29,8 +28,8 @@ class SharedDataManager: DataManagerProtocol {
     var sample_tags: [String] = []
     var frame_widths: [String] = []
     var frame_heights: [String] = []
-    var pressures: [String] = []
-    var maxPressures: [String] = []
+    var traveled_distances: [String] = []
+
 }
 
 struct DataEntry: Codable {
@@ -38,12 +37,11 @@ struct DataEntry: Codable {
     var events: [String]
     var xCoordinates: [String]
     var yCoordinates: [String]
-    var pressures: [String]
-    var maxPressure: String
     var annotation: String
     var sampleTag: String
     var frameWidth: String
     var frameHeight: String
+    var traveledDistances: [String]
 }
 
 class DataManagerRepository {
@@ -79,12 +77,11 @@ class DataManagerRepository {
                     events: manager.events,
                     xCoordinates: manager.x_coordinates,
                     yCoordinates: manager.y_coordinates,
-                    pressures: manager.pressures,
-                    maxPressure: manager.maxPressures.first ?? "",
                     annotation: manager.annotations.first ?? "",
                     sampleTag: manager.sample_tags.first ?? "",
                     frameWidth: manager.frame_widths.first ?? "",
-                    frameHeight: manager.frame_heights.first ?? ""
+                    frameHeight: manager.frame_heights.first ?? "",
+                    traveledDistances: manager.traveled_distances
                 )
                 dataArray.append(entry)
             }

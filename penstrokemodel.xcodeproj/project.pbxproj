@@ -34,6 +34,9 @@
 		2BC591992C4025AD008FB383 /* pen_stroke_model0.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 2BC591982C4025AD008FB383 /* pen_stroke_model0.tflite */; };
 		2BC5919A2C4025AD008FB383 /* pen_stroke_model0.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 2BC591982C4025AD008FB383 /* pen_stroke_model0.tflite */; };
 		2BC5919B2C4025AD008FB383 /* pen_stroke_model0.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 2BC591982C4025AD008FB383 /* pen_stroke_model0.tflite */; };
+		2BCA1A8F2C411C3600160B51 /* pen_stroke_modelratio.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 2BCA1A8E2C411C3500160B51 /* pen_stroke_modelratio.tflite */; };
+		2BCA1A902C411C3600160B51 /* pen_stroke_modelratio.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 2BCA1A8E2C411C3500160B51 /* pen_stroke_modelratio.tflite */; };
+		2BCA1A912C411C3600160B51 /* pen_stroke_modelratio.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 2BCA1A8E2C411C3500160B51 /* pen_stroke_modelratio.tflite */; };
 		F73DA3F8E202E9E743623969 /* Pods_penstrokemodel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F2964705EA826B6B8B07071 /* Pods_penstrokemodel.framework */; };
 /* End PBXBuildFile section */
 
@@ -76,6 +79,7 @@
 		2BC5918A2C3EBB57008FB383 /* pen_stroke_model_xyijk.tflite */ = {isa = PBXFileReference; lastKnownFileType = file; path = pen_stroke_model_xyijk.tflite; sourceTree = "<group>"; };
 		2BC591942C3ED244008FB383 /* pen_stroke_model_small.tflite */ = {isa = PBXFileReference; lastKnownFileType = file; path = pen_stroke_model_small.tflite; sourceTree = "<group>"; };
 		2BC591982C4025AD008FB383 /* pen_stroke_model0.tflite */ = {isa = PBXFileReference; lastKnownFileType = file; path = pen_stroke_model0.tflite; sourceTree = "<group>"; };
+		2BCA1A8E2C411C3500160B51 /* pen_stroke_modelratio.tflite */ = {isa = PBXFileReference; lastKnownFileType = file; path = pen_stroke_modelratio.tflite; sourceTree = "<group>"; };
 		4953BBCDB4B9F567EDB7E29B /* Pods-penstrokemodel.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-penstrokemodel.release.xcconfig"; path = "Target Support Files/Pods-penstrokemodel/Pods-penstrokemodel.release.xcconfig"; sourceTree = "<group>"; };
 		5F2964705EA826B6B8B07071 /* Pods_penstrokemodel.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_penstrokemodel.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8A516646752F5CFF2FDCB2B6 /* Pods-penstrokemodel.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-penstrokemodel.debug.xcconfig"; path = "Target Support Files/Pods-penstrokemodel/Pods-penstrokemodel.debug.xcconfig"; sourceTree = "<group>"; };
@@ -143,6 +147,7 @@
 				2B8868C62C384F4300419C85 /* Assets.xcassets */,
 				2B8868C82C384F4300419C85 /* LaunchScreen.storyboard */,
 				2B8868CB2C384F4300419C85 /* Info.plist */,
+				2BCA1A8E2C411C3500160B51 /* pen_stroke_modelratio.tflite */,
 				2BC591982C4025AD008FB383 /* pen_stroke_model0.tflite */,
 				2BC591942C3ED244008FB383 /* pen_stroke_model_small.tflite */,
 				2B88697B2C3D5ADC00419C85 /* pen_stroke_model.tflite */,
@@ -294,6 +299,7 @@
 				2BC5918B2C3EBB57008FB383 /* pen_stroke_model_xyijk.tflite in Resources */,
 				2B8868C72C384F4300419C85 /* Assets.xcassets in Resources */,
 				2B8868CA2C384F4300419C85 /* Base in Resources */,
+				2BCA1A8F2C411C3600160B51 /* pen_stroke_modelratio.tflite in Resources */,
 				2BC591952C3ED244008FB383 /* pen_stroke_model_small.tflite in Resources */,
 				2B8868C52C384F4000419C85 /* Base in Resources */,
 				2B88697C2C3D5ADC00419C85 /* pen_stroke_model.tflite in Resources */,
@@ -305,6 +311,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2BCA1A902C411C3600160B51 /* pen_stroke_modelratio.tflite in Resources */,
 				2BC5919A2C4025AD008FB383 /* pen_stroke_model0.tflite in Resources */,
 				2BC591962C3ED244008FB383 /* pen_stroke_model_small.tflite in Resources */,
 				2B88697D2C3D5ADC00419C85 /* pen_stroke_model.tflite in Resources */,
@@ -316,6 +323,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2BCA1A912C411C3600160B51 /* pen_stroke_modelratio.tflite in Resources */,
 				2BC5919B2C4025AD008FB383 /* pen_stroke_model0.tflite in Resources */,
 				2BC591972C3ED244008FB383 /* pen_stroke_model_small.tflite in Resources */,
 				2B88697E2C3D5ADC00419C85 /* pen_stroke_model.tflite in Resources */,
