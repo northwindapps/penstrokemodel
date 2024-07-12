@@ -18,6 +18,18 @@ class StrokeModelHandler {
         }
     }
     
+    func performPrediction2(pre_x: [Float], pre_y: [Float], pre_time: [Float], maxLength: Int) -> (String, Float)? {
+
+        let inputData = preprocessInputData(xCoordinates: pre_x, yCoordinates: pre_y, timeStamps: pre_time)
+        
+        if let predictions = predict(inputData: inputData, maxLength: maxLength) {
+            if let maxIndex = indexOfMax(predictions), let maxValue = maxValue(predictions) {
+                return (labels[maxIndex], maxValue)
+            }
+        }
+        return nil
+    }
+    
     func performPrediction(pre_x: [Float], pre_y: [Float], pre_time: [Float], maxLength: Int) -> (String, Float)? {
         
         //merged data previous + current
@@ -30,6 +42,8 @@ class StrokeModelHandler {
             yCoordinates += pre_y
             timeStamps += pre_time
             
+            
+            
             let inputMergedData = preprocessInputData(xCoordinates: xCoordinates, yCoordinates: yCoordinates, timeStamps: timeStamps)
             
             if let predictions = predict(inputData: inputMergedData, maxLength: maxLength) {
@@ -40,14 +54,6 @@ class StrokeModelHandler {
                 }
             }
             
-        }
-
-        let inputData = preprocessInputData(xCoordinates: pre_x, yCoordinates: pre_y, timeStamps: pre_time)
-        
-        if let predictions = predict(inputData: inputData, maxLength: maxLength) {
-            if let maxIndex = indexOfMax(predictions), let maxValue = maxValue(predictions) {
-                return (labels[maxIndex], maxValue)
-            }
         }
         return nil
     }

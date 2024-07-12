@@ -13,6 +13,7 @@ class CustomCanvasView: PKCanvasView {
     var startTime: TimeInterval = 0
     private var dataManager: DataManagerProtocol
     private var annotation: String
+    private var prediction_history:[Float] = []
     var modelHandler: StrokeModelHandler!
     var products: [String] {
         didSet {
@@ -189,21 +190,40 @@ class CustomCanvasView: PKCanvasView {
         
         if let (label,value) = modelHandler.performPrediction(pre_x: pre_x, pre_y: pre_y, pre_time: pre_time, maxLength: 38) {
             if value > 0.87{
-                //products.removeLast()
+//                if prediction_history.last ?? 0.0 > 0.87{
+//                    products.removeLast()
+//                }
                 products.append(label)
                 print("Predicted label: \(label)")
                 print("Predicted value: \(value)")
+                prediction_history.append(value)
+                return
             }
             if value <= 0.87{
                 //y,i,j,x.. two-stroke group
                 print("NG Predicted label: \(label)")
                 print("NG Predicted value: \(value)")
             }
-
-        } else {
+        }
+        
+        if let (label,value) = modelHandler.performPrediction2(pre_x: pre_x, pre_y: pre_y, pre_time: pre_time, maxLength: 38) {
+            if value > 0.87{
+                products.append(label)
+                print("Predicted label: \(label)")
+                print("Predicted value: \(value)")
+                prediction_history.append(value)
+                return
+            }
+            if value <= 0.87{
+                //y,i,j,x.. two-stroke group
+                print("NG Predicted label: \(label)")
+                print("NG Predicted value: \(value)")
+            }
+        }else {
             print("Prediction failed")
             //DataManagerRepository.shared.removeAllDataManager()
         }
+        prediction_history.append(0.0)
         //DataManagerRepository.shared.removeAllDataManager()
     }
 }
