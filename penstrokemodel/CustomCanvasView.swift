@@ -48,7 +48,6 @@ class CustomCanvasView: PKCanvasView {
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
-        cancelTimer()
         startTime = 0
         if let touch = touches.first {
             let location = touch.location(in: self)
@@ -129,7 +128,7 @@ class CustomCanvasView: PKCanvasView {
                 // Set timer
                 prediction_timer = Timer.scheduledTimer(withTimeInterval: 0, repeats: false) { [weak self] timer in
                     
-                    self?.handleTimer(prex: self!.dataManager.x_coordinates, prey: self!.dataManager.y_coordinates, pretime: self!.dataManager.timeStamps, event: self!.dataManager.timeStamps)
+                    self?.handleTimer(prex: self!.dataManager.x_coordinates, prey: self!.dataManager.y_coordinates, pretime: self!.dataManager.timeStamps, event: self!.dataManager.events)
                 }
                 strokeCounter = 0
             }
@@ -177,8 +176,6 @@ class CustomCanvasView: PKCanvasView {
     
     private func handleTimer(prex: [String], prey: [String], pretime:[String], event:[String]) {
         performPrediction(pre_x: prex.compactMap{Float($0)}, pre_y: prey.compactMap{Float($0)}, pre_time: pretime.compactMap{Float($0)})
-        DataManagerRepository.shared.removeDataManager()
-        DataManagerRepository.shared.addDataManager(self.copyDataManager() as! SharedDataManager)
         self.deleteData()
     }
     
@@ -192,30 +189,29 @@ class CustomCanvasView: PKCanvasView {
     
     func performPrediction(pre_x: [Float], pre_y: [Float], pre_time: [Float]) {
         
-        if let (label,value) = modelHandler.performPrediction(pre_x: pre_x, pre_y: pre_y, pre_time: pre_time, maxLength: 57) {
-            if value > 0.87{
-//                if prediction_history.last ?? 0.0 > 0.87{
-//                    products.removeLast()
-//                }
-                products.append(label)
-                print("Predicted label: \(label)")
-                print("Predicted value: \(value)")
-                prediction_history.append(value)
-                return
-            }
-            if value <= 0.87{
-                //y,i,j,x.. two-stroke group
-                print("NG Predicted label: \(label)")
-                print("NG Predicted value: \(value)")
-            }
-        }
+//        if let (label,value) = modelHandler.performPrediction(pre_x: pre_x, pre_y: pre_y, pre_time: pre_time, maxLength: 57) {
+//            if value > 0.87{
+////                if prediction_history.last ?? 0.0 > 0.87{
+////                    products.removeLast()
+////                }
+//                products.append(label)
+//                print("Predicted label: \(label)")
+//                print("Predicted value: \(value)")
+//                prediction_history.append(value)
+//                return
+//            }
+//            if value <= 0.87{
+//                //y,i,j,x.. two-stroke group
+//                print("NG Predicted label: \(label)")
+//                print("NG Predicted value: \(value)")
+//            }
+//        }
         
         if let (label,value) = modelHandler.performPrediction2(pre_x: pre_x, pre_y: pre_y, pre_time: pre_time, maxLength: 57) {
             if value > 0.87{
                 products.append(label)
                 print("Predicted label: \(label)")
                 print("Predicted value: \(value)")
-                prediction_history.append(value)
                 return
             }
             if value <= 0.87{
@@ -227,7 +223,6 @@ class CustomCanvasView: PKCanvasView {
             print("Prediction failed")
             //DataManagerRepository.shared.removeAllDataManager()
         }
-        prediction_history.append(0.0)
         //DataManagerRepository.shared.removeAllDataManager()
     }
 }
