@@ -11,6 +11,7 @@ import PencilKit
 
 class CustomCanvasView: PKCanvasView {
     var startTime: TimeInterval = 0
+    private var strokeCounter : Int = 0
     private var dataManager: DataManagerProtocol
     private var annotation: String
     private var prediction_history:[Float] = []
@@ -35,7 +36,7 @@ class CustomCanvasView: PKCanvasView {
        
         
         // Initialize model handler
-        modelHandler = StrokeModelHandler(modelName: "pen_stroke_model0")
+        modelHandler = StrokeModelHandler(modelName: "pen_stroke_model2strokes")
 //        let sharedDataManager = SharedDataManager()
 //        let view = CustomCanvasView(dataManager: sharedDataManager)
         super.init(frame: .zero)
@@ -107,6 +108,7 @@ class CustomCanvasView: PKCanvasView {
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesEnded(touches, with: event)
         if let touch = touches.first {
+            strokeCounter += 1
             let location = touch.location(in: self)
             let timestamp = touch.timestamp
             let relativeTimestamp = (timestamp - startTime) * 1000 // convert to milliseconds
@@ -123,11 +125,13 @@ class CustomCanvasView: PKCanvasView {
             dataManager.frame_heights.append("\(self.frame.height)")
             
             
-            
-            // Set timer
-            prediction_timer = Timer.scheduledTimer(withTimeInterval: 0, repeats: false) { [weak self] timer in
-                
-                self?.handleTimer(prex: self!.dataManager.x_coordinates, prey: self!.dataManager.y_coordinates, pretime: self!.dataManager.timeStamps, event: self!.dataManager.timeStamps)
+            if strokeCounter == 2{
+                // Set timer
+                prediction_timer = Timer.scheduledTimer(withTimeInterval: 0, repeats: false) { [weak self] timer in
+                    
+                    self?.handleTimer(prex: self!.dataManager.x_coordinates, prey: self!.dataManager.y_coordinates, pretime: self!.dataManager.timeStamps, event: self!.dataManager.timeStamps)
+                }
+                strokeCounter = 0
             }
             
             
@@ -188,7 +192,7 @@ class CustomCanvasView: PKCanvasView {
     
     func performPrediction(pre_x: [Float], pre_y: [Float], pre_time: [Float]) {
         
-        if let (label,value) = modelHandler.performPrediction(pre_x: pre_x, pre_y: pre_y, pre_time: pre_time, maxLength: 38) {
+        if let (label,value) = modelHandler.performPrediction(pre_x: pre_x, pre_y: pre_y, pre_time: pre_time, maxLength: 57) {
             if value > 0.87{
 //                if prediction_history.last ?? 0.0 > 0.87{
 //                    products.removeLast()
@@ -206,7 +210,7 @@ class CustomCanvasView: PKCanvasView {
             }
         }
         
-        if let (label,value) = modelHandler.performPrediction2(pre_x: pre_x, pre_y: pre_y, pre_time: pre_time, maxLength: 38) {
+        if let (label,value) = modelHandler.performPrediction2(pre_x: pre_x, pre_y: pre_y, pre_time: pre_time, maxLength: 57) {
             if value > 0.87{
                 products.append(label)
                 print("Predicted label: \(label)")
