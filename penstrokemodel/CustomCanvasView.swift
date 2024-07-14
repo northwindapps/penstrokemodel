@@ -96,7 +96,6 @@ class CustomCanvasView: PKCanvasView {
             dataManager.y_coordinates.append("\(location.y)")
             
             if strokeCounter == 1{
-                // Set timer
                 let rlt = performPrediction1stroke(pre_x: dataManager.x_coordinates.compactMap{Float($0)}, pre_y: dataManager.y_coordinates.compactMap{Float($0)}, pre_time: dataManager.timeStamps.compactMap{Float($0)})
                 if rlt{
                     self.deleteData()
@@ -105,7 +104,6 @@ class CustomCanvasView: PKCanvasView {
             }
             
             if strokeCounter == 2{
-                // Set timer
                 performPrediction(pre_x: dataManager.x_coordinates.compactMap{Float($0)}, pre_y: dataManager.y_coordinates.compactMap{Float($0)}, pre_time: dataManager.timeStamps.compactMap{Float($0)})
                 self.deleteData()
                 strokeCounter = 0
