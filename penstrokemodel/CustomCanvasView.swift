@@ -16,6 +16,7 @@ class CustomCanvasView: PKCanvasView {
     private var annotation: String
     private var prediction_history:[Float] = []
     var modelHandler: StrokeModelHandler!
+    var modelHandler_1stroke: StrokeModelHandler!
     var products: [String] {
         didSet {
             print("Products changed to: \(products)")
@@ -37,8 +38,7 @@ class CustomCanvasView: PKCanvasView {
         
         // Initialize model handler
         modelHandler = StrokeModelHandler(modelName: "pen_stroke_model2strokes")
-//        let sharedDataManager = SharedDataManager()
-//        let view = CustomCanvasView(dataManager: sharedDataManager)
+        modelHandler_1stroke = StrokeModelHandler(modelName: "pen_stroke_model1stroke")
         super.init(frame: .zero)
     }
 
@@ -56,12 +56,6 @@ class CustomCanvasView: PKCanvasView {
                 startTime = timestamp // set the start time to the timestamp of the first touch
             }
             let relativeTimestamp = (timestamp - startTime) * 1000 // convert to milliseconds
-            
-            
-        
-            
-            //print("tag: \(self.tag)")
-            //print("Touch began at: \(location), timestamp: \(relativeTimestamp) ms")
             
             //store data
             dataManager.timeStamps.append(String(relativeTimestamp))
@@ -115,6 +109,15 @@ class CustomCanvasView: PKCanvasView {
             dataManager.frame_widths.append("\(self.frame.width)")
             dataManager.frame_heights.append("\(self.frame.height)")
             
+            
+            if strokeCounter == 1{
+                // Set timer
+                let rlt = performPrediction1stroke(pre_x: dataManager.x_coordinates.compactMap{Float($0)}, pre_y: dataManager.y_coordinates.compactMap{Float($0)}, pre_time: dataManager.timeStamps.compactMap{Float($0)})
+                if rlt{
+                    self.deleteData()
+                    strokeCounter = 0
+                }
+            }
             
             if strokeCounter == 2{
                 // Set timer
@@ -177,25 +180,6 @@ class CustomCanvasView: PKCanvasView {
     
     
     func performPrediction(pre_x: [Float], pre_y: [Float], pre_time: [Float]) {
-        
-//        if let (label,value) = modelHandler.performPrediction(pre_x: pre_x, pre_y: pre_y, pre_time: pre_time, maxLength: 57) {
-//            if value > 0.87{
-////                if prediction_history.last ?? 0.0 > 0.87{
-////                    products.removeLast()
-////                }
-//                products.append(label)
-//                print("Predicted label: \(label)")
-//                print("Predicted value: \(value)")
-//                prediction_history.append(value)
-//                return
-//            }
-//            if value <= 0.87{
-//                //y,i,j,x.. two-stroke group
-//                print("NG Predicted label: \(label)")
-//                print("NG Predicted value: \(value)")
-//            }
-//        }
-        
         if let (label,value) = modelHandler.performPrediction2(pre_x: pre_x, pre_y: pre_y, pre_time: pre_time, maxLength: 57) {
             if value > 0.87{
                 products.append(label)
@@ -213,5 +197,25 @@ class CustomCanvasView: PKCanvasView {
             //DataManagerRepository.shared.removeAllDataManager()
         }
         //DataManagerRepository.shared.removeAllDataManager()
+    }
+    
+    func performPrediction1stroke(pre_x: [Float], pre_y: [Float], pre_time: [Float]) -> Bool {
+        if let (label,value) = modelHandler_1stroke.performPrediction1stroke(pre_x: pre_x, pre_y: pre_y, pre_time: pre_time, maxLength: 67) {
+            if value > 0.87{
+                products.append(label)
+                print("Predicted label: \(label)")
+                print("Predicted value: \(value)")
+                return true
+            }
+            if value <= 0.87{
+                //y,i,j,x.. two-stroke group
+                print("NG Predicted label: \(label)")
+                print("NG Predicted value: \(value)")
+            }
+        }else {
+            print("Prediction failed")
+            //DataManagerRepository.shared.removeAllDataManager()
+        }
+        return false
     }
 }
