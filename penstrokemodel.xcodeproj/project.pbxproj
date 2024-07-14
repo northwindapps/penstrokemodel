@@ -40,9 +40,9 @@
 		2BCA1AC72C436B3900160B51 /* pen_stroke_model2strokes.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 2BCA1AC62C436B3900160B51 /* pen_stroke_model2strokes.tflite */; };
 		2BCA1AC82C436B3900160B51 /* pen_stroke_model2strokes.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 2BCA1AC62C436B3900160B51 /* pen_stroke_model2strokes.tflite */; };
 		2BCA1AC92C436B3900160B51 /* pen_stroke_model2strokes.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 2BCA1AC62C436B3900160B51 /* pen_stroke_model2strokes.tflite */; };
-		2BCA1ACF2C43777500160B51 /* pen_stroke_model1stroke.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 2BCA1ACE2C43777500160B51 /* pen_stroke_model1stroke.tflite */; };
-		2BCA1AD02C43777500160B51 /* pen_stroke_model1stroke.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 2BCA1ACE2C43777500160B51 /* pen_stroke_model1stroke.tflite */; };
-		2BCA1AD12C43777500160B51 /* pen_stroke_model1stroke.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 2BCA1ACE2C43777500160B51 /* pen_stroke_model1stroke.tflite */; };
+		2BCA1AD32C43835100160B51 /* pen_stroke_model1stroke.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 2BCA1AD22C43835100160B51 /* pen_stroke_model1stroke.tflite */; };
+		2BCA1AD42C43835100160B51 /* pen_stroke_model1stroke.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 2BCA1AD22C43835100160B51 /* pen_stroke_model1stroke.tflite */; };
+		2BCA1AD52C43835100160B51 /* pen_stroke_model1stroke.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 2BCA1AD22C43835100160B51 /* pen_stroke_model1stroke.tflite */; };
 		F73DA3F8E202E9E743623969 /* Pods_penstrokemodel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F2964705EA826B6B8B07071 /* Pods_penstrokemodel.framework */; };
 /* End PBXBuildFile section */
 
@@ -87,7 +87,7 @@
 		2BC591982C4025AD008FB383 /* pen_stroke_model0.tflite */ = {isa = PBXFileReference; lastKnownFileType = file; path = pen_stroke_model0.tflite; sourceTree = "<group>"; };
 		2BCA1AAA2C42555D00160B51 /* pen_stroke_model1.tflite */ = {isa = PBXFileReference; lastKnownFileType = file; name = pen_stroke_model1.tflite; path = ../../../../Downloads/pen_stroke_model1.tflite; sourceTree = "<group>"; };
 		2BCA1AC62C436B3900160B51 /* pen_stroke_model2strokes.tflite */ = {isa = PBXFileReference; lastKnownFileType = file; path = pen_stroke_model2strokes.tflite; sourceTree = "<group>"; };
-		2BCA1ACE2C43777500160B51 /* pen_stroke_model1stroke.tflite */ = {isa = PBXFileReference; lastKnownFileType = file; path = pen_stroke_model1stroke.tflite; sourceTree = "<group>"; };
+		2BCA1AD22C43835100160B51 /* pen_stroke_model1stroke.tflite */ = {isa = PBXFileReference; lastKnownFileType = file; path = pen_stroke_model1stroke.tflite; sourceTree = "<group>"; };
 		4953BBCDB4B9F567EDB7E29B /* Pods-penstrokemodel.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-penstrokemodel.release.xcconfig"; path = "Target Support Files/Pods-penstrokemodel/Pods-penstrokemodel.release.xcconfig"; sourceTree = "<group>"; };
 		5F2964705EA826B6B8B07071 /* Pods_penstrokemodel.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_penstrokemodel.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8A516646752F5CFF2FDCB2B6 /* Pods-penstrokemodel.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-penstrokemodel.debug.xcconfig"; path = "Target Support Files/Pods-penstrokemodel/Pods-penstrokemodel.debug.xcconfig"; sourceTree = "<group>"; };
@@ -157,8 +157,8 @@
 				2B8868CB2C384F4300419C85 /* Info.plist */,
 				2BCA1AAA2C42555D00160B51 /* pen_stroke_model1.tflite */,
 				2BCA1AC62C436B3900160B51 /* pen_stroke_model2strokes.tflite */,
-				2BCA1ACE2C43777500160B51 /* pen_stroke_model1stroke.tflite */,
 				2BC591982C4025AD008FB383 /* pen_stroke_model0.tflite */,
+				2BCA1AD22C43835100160B51 /* pen_stroke_model1stroke.tflite */,
 				2BC591942C3ED244008FB383 /* pen_stroke_model_small.tflite */,
 				2B88697B2C3D5ADC00419C85 /* pen_stroke_model.tflite */,
 				2BC5918A2C3EBB57008FB383 /* pen_stroke_model_xyijk.tflite */,
@@ -311,7 +311,7 @@
 				2BCA1AC72C436B3900160B51 /* pen_stroke_model2strokes.tflite in Resources */,
 				2B8868CA2C384F4300419C85 /* Base in Resources */,
 				2BC591952C3ED244008FB383 /* pen_stroke_model_small.tflite in Resources */,
-				2BCA1ACF2C43777500160B51 /* pen_stroke_model1stroke.tflite in Resources */,
+				2BCA1AD32C43835100160B51 /* pen_stroke_model1stroke.tflite in Resources */,
 				2B8868C52C384F4000419C85 /* Base in Resources */,
 				2B88697C2C3D5ADC00419C85 /* pen_stroke_model.tflite in Resources */,
 				2BC591992C4025AD008FB383 /* pen_stroke_model0.tflite in Resources */,
@@ -324,7 +324,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2BCA1AAC2C42555D00160B51 /* pen_stroke_model1.tflite in Resources */,
-				2BCA1AD02C43777500160B51 /* pen_stroke_model1stroke.tflite in Resources */,
+				2BCA1AD42C43835100160B51 /* pen_stroke_model1stroke.tflite in Resources */,
 				2BC5919A2C4025AD008FB383 /* pen_stroke_model0.tflite in Resources */,
 				2BCA1AC82C436B3900160B51 /* pen_stroke_model2strokes.tflite in Resources */,
 				2BC591962C3ED244008FB383 /* pen_stroke_model_small.tflite in Resources */,
@@ -338,7 +338,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2BCA1AAD2C42555D00160B51 /* pen_stroke_model1.tflite in Resources */,
-				2BCA1AD12C43777500160B51 /* pen_stroke_model1stroke.tflite in Resources */,
+				2BCA1AD52C43835100160B51 /* pen_stroke_model1stroke.tflite in Resources */,
 				2BC5919B2C4025AD008FB383 /* pen_stroke_model0.tflite in Resources */,
 				2BCA1AC92C436B3900160B51 /* pen_stroke_model2strokes.tflite in Resources */,
 				2BC591972C3ED244008FB383 /* pen_stroke_model_small.tflite in Resources */,
