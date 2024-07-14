@@ -58,13 +58,6 @@ class CustomCanvasView: PKCanvasView {
             let relativeTimestamp = (timestamp - startTime) * 1000 // convert to milliseconds
             
             
-            let pressure = touch.force
-            let maximumPossibleForce = touch.maximumPossibleForce
-            
-            
-            if self.traitCollection.forceTouchCapability == .available {
-                let normalizedPressure = pressure / maximumPossibleForce
-            }
         
             
             //print("tag: \(self.tag)")
@@ -79,7 +72,6 @@ class CustomCanvasView: PKCanvasView {
             dataManager.y_coordinates.append("\(location.y)")
             dataManager.frame_widths.append("\(self.frame.width)")
             dataManager.frame_heights.append("\(self.frame.height)")
-            dataManager.pressures.append("\(pressure)")
 
         }
     }
@@ -126,10 +118,8 @@ class CustomCanvasView: PKCanvasView {
             
             if strokeCounter == 2{
                 // Set timer
-                prediction_timer = Timer.scheduledTimer(withTimeInterval: 0, repeats: false) { [weak self] timer in
-                    
-                    self?.handleTimer(prex: self!.dataManager.x_coordinates, prey: self!.dataManager.y_coordinates, pretime: self!.dataManager.timeStamps, event: self!.dataManager.events)
-                }
+                performPrediction(pre_x: dataManager.x_coordinates.compactMap{Float($0)}, pre_y: dataManager.y_coordinates.compactMap{Float($0)}, pre_time: dataManager.timeStamps.compactMap{Float($0)})
+                self.deleteData()
                 strokeCounter = 0
             }
             
@@ -175,8 +165,7 @@ class CustomCanvasView: PKCanvasView {
     }
     
     private func handleTimer(prex: [String], prey: [String], pretime:[String], event:[String]) {
-        performPrediction(pre_x: prex.compactMap{Float($0)}, pre_y: prey.compactMap{Float($0)}, pre_time: pretime.compactMap{Float($0)})
-        self.deleteData()
+        
     }
     
     private func cancelTimer() {
