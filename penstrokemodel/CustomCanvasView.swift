@@ -59,13 +59,8 @@ class CustomCanvasView: PKCanvasView {
             
             //store data
             dataManager.timeStamps.append(String(relativeTimestamp))
-            dataManager.events.append("start")
-            dataManager.annotations.append(annotation)
-            dataManager.sample_tags.append(String(self.tag))
             dataManager.x_coordinates.append("\(location.x)")
             dataManager.y_coordinates.append("\(location.y)")
-            dataManager.frame_widths.append("\(self.frame.width)")
-            dataManager.frame_heights.append("\(self.frame.height)")
 
         }
     }
