@@ -80,13 +80,9 @@ class CustomCanvasView: PKCanvasView {
             
             //store data
             dataManager.timeStamps.append(String(relativeTimestamp))
-            dataManager.events.append("move")
-            dataManager.annotations.append(annotation)
-            dataManager.sample_tags.append(String(self.tag))
             dataManager.x_coordinates.append("\(location.x)")
             dataManager.y_coordinates.append("\(location.y)")
-            dataManager.frame_widths.append("\(self.frame.width)")
-            dataManager.frame_heights.append("\(self.frame.height)")
+            
         }
     }
 
@@ -101,14 +97,8 @@ class CustomCanvasView: PKCanvasView {
             
             //store data
             dataManager.timeStamps.append(String(relativeTimestamp))
-            dataManager.events.append("end")
-            dataManager.annotations.append(annotation)
-            dataManager.sample_tags.append(String(self.tag))
             dataManager.x_coordinates.append("\(location.x)")
             dataManager.y_coordinates.append("\(location.y)")
-            dataManager.frame_widths.append("\(self.frame.width)")
-            dataManager.frame_heights.append("\(self.frame.height)")
-            
             
             if strokeCounter == 1{
                 // Set timer
@@ -194,9 +184,7 @@ class CustomCanvasView: PKCanvasView {
             }
         }else {
             print("Prediction failed")
-            //DataManagerRepository.shared.removeAllDataManager()
         }
-        //DataManagerRepository.shared.removeAllDataManager()
     }
     
     func performPrediction1stroke(pre_x: [Float], pre_y: [Float], pre_time: [Float]) -> Bool {
