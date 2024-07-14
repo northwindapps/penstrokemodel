@@ -183,7 +183,7 @@ class CustomCanvasView: PKCanvasView {
     }
     
     func performPrediction1stroke(pre_x: [Float], pre_y: [Float], pre_time: [Float]) -> Bool {
-        if let (label,value) = modelHandler_1stroke.performPrediction1stroke(pre_x: pre_x, pre_y: pre_y, pre_time: pre_time, maxLength: 55) {
+        if let (label,value) = modelHandler_1stroke.performPrediction1stroke(pre_x: pre_x, pre_y: pre_y, pre_time: pre_time, maxLength: 71) {
             if value > 0.87 && label != "-" && label != "＼" && label != "|2" && label != "|"{
                 products.append(label)
                 print("Predicted label: \(label)")
