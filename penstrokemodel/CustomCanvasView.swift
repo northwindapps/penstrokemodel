@@ -84,12 +84,18 @@ class CustomCanvasView: PKCanvasView {
 
     @objc func buttonTapped() {
         print("Button was tapped")
+        if products.last == " "{
+            products.removeLast()
+        }
         products.append(".")
         // Add your button tap handling logic here
     }
     
     @objc func buttonTapped2() {
         print("Button was tapped")
+        if products.last == " "{
+            products.removeLast()
+        }
         products.removeLast()
         // Add your button tap handling logic here
     }
@@ -106,9 +112,10 @@ class CustomCanvasView: PKCanvasView {
             let relativeTimestamp = (timestamp - startTime) * 1000 // convert to milliseconds
             
             //store data
-            dataManager.timeStamps.append(String(relativeTimestamp))
-            dataManager.x_coordinates.append("\(location.x)")
-            dataManager.y_coordinates.append("\(location.y)")
+            dataManager.timeStamps.append(Float(relativeTimestamp))
+            dataManager.x_coordinates.append(Float(location.x))
+            dataManager.y_coordinates.append(Float(location.y))
+            
         }
     }
     
@@ -123,9 +130,9 @@ class CustomCanvasView: PKCanvasView {
             //print("Touch moved to: \(location), timestamp: \(relativeTimestamp) ms")
             
             //store data
-            dataManager.timeStamps.append(String(relativeTimestamp))
-            dataManager.x_coordinates.append("\(location.x)")
-            dataManager.y_coordinates.append("\(location.y)")
+            dataManager.timeStamps.append(Float(relativeTimestamp))
+            dataManager.x_coordinates.append(Float(location.x))
+            dataManager.y_coordinates.append(Float(location.y))
         }
     }
 
@@ -139,11 +146,11 @@ class CustomCanvasView: PKCanvasView {
             //print("Touch ended at: \(location), timestamp: \(relativeTimestamp) ms")
             
             //store data
-            dataManager.timeStamps.append(String(relativeTimestamp))
-            dataManager.x_coordinates.append("\(location.x)")
-            dataManager.y_coordinates.append("\(location.y)")
+            dataManager.timeStamps.append(Float(relativeTimestamp))
+            dataManager.x_coordinates.append(Float(location.x))
+            dataManager.y_coordinates.append(Float(location.y))
             
-            if end_x_coordinate > 0.0 && (abs(end_x_coordinate - location.x) > 60) || (abs(end_y_coordinate) - location.y > 50){
+            if end_x_coordinate > 0.0 && (abs(end_x_coordinate - location.x) > 80) || (abs(end_y_coordinate) - location.y > 60){
                 if products.last != " "{
                     products.append(" ")
                 }
@@ -163,8 +170,17 @@ class CustomCanvasView: PKCanvasView {
                 self.deleteData()
                 strokeCounter = 0
                 self.drawing = PKDrawing()
+                print(rlt)
             }
                 
+            // Check if the touch is within any button's frame
+            if let button1 = firstButton, button1.frame.contains(location) {
+                return
+            }
+            if let button2 = secondButton, button2.frame.contains(location) {
+                return
+            }
+            
             end_x_coordinate = CGFloat(location.x)
             end_y_coordinate = CGFloat(location.y)
             showButton(at: location)

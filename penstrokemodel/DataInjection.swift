@@ -8,10 +8,10 @@
 import Foundation
 
 protocol DataManagerProtocol {
-    var timeStamps: [String] { get set }
+    var timeStamps: [Float] { get set }
     var events: [String] { get set }
-    var x_coordinates: [String] { get set }
-    var y_coordinates: [String] { get set }
+    var x_coordinates: [Float] { get set }
+    var y_coordinates: [Float] { get set }
     var annotations: [String] { get set }
     var sample_tags: [String] { get set }
     var frame_widths: [String] { get set }
@@ -21,10 +21,10 @@ protocol DataManagerProtocol {
 }
 
 class SharedDataManager: DataManagerProtocol {
-    var timeStamps: [String] = []
+    var timeStamps: [Float] = []
     var events: [String] = [] // start, move, end
-    var x_coordinates: [String] = []
-    var y_coordinates: [String] = []
+    var x_coordinates: [Float] = []
+    var y_coordinates: [Float] = []
     var annotations: [String] = []
     var sample_tags: [String] = []
     var frame_widths: [String] = []
@@ -34,10 +34,10 @@ class SharedDataManager: DataManagerProtocol {
 }
 
 struct DataEntry: Codable {
-    var timeStamps: [String]
+    var timeStamps: [Float]
     var events: [String]
-    var xCoordinates: [String]
-    var yCoordinates: [String]
+    var xCoordinates: [Float]
+    var yCoordinates: [Float]
     var pressures: [String]
     var maxPressure: String
     var annotation: String
