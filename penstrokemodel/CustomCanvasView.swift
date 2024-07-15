@@ -129,10 +129,11 @@ class CustomCanvasView: PKCanvasView {
             let relativeTimestamp = (timestamp - startTime) * 1000 // convert to milliseconds
             //print("Touch moved to: \(location), timestamp: \(relativeTimestamp) ms")
             
-            //store data
-            dataManager.timeStamps.append(Float(relativeTimestamp))
-            dataManager.x_coordinates.append(Float(location.x))
-            dataManager.y_coordinates.append(Float(location.y))
+            DispatchQueue.global(qos: .background).async {
+                self.dataManager.timeStamps.append(Float(relativeTimestamp))
+                self.dataManager.x_coordinates.append(Float(location.x))
+                self.dataManager.y_coordinates.append(Float(location.y))
+            }
         }
     }
 
