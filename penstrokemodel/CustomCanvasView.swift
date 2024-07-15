@@ -31,6 +31,8 @@ class CustomCanvasView: PKCanvasView {
     private var end_y_coordinate: CGFloat = 0.0
     private var firstButton: UIButton?
     private var secondButton: UIButton?
+    private var thirdButton: UIButton?
+    private var fourthButton: UIButton?
 
 
     // Dependency Injection through initializer
@@ -54,10 +56,12 @@ class CustomCanvasView: PKCanvasView {
         // Remove existing buttons if any
         firstButton?.removeFromSuperview()
         secondButton?.removeFromSuperview()
+        thirdButton?.removeFromSuperview()
+        fourthButton?.removeFromSuperview()
 
         // Create the first button
         let newFirstButton = UIButton(type: .system)
-        newFirstButton.frame = CGRect(x: location.x - 50, y: location.y - 180, width: 50, height: 25) // Adjust frame as needed
+        newFirstButton.frame = CGRect(x: location.x - 50, y: location.y + 180, width: 50, height: 25) // Adjust frame as needed
         newFirstButton.setTitle(".", for: .normal)
         newFirstButton.backgroundColor = .systemBlue
         newFirstButton.setTitleColor(.white, for: .normal)
@@ -70,7 +74,7 @@ class CustomCanvasView: PKCanvasView {
 
         // Create the second button next to the first one
         let newSecondButton = UIButton(type: .system)
-        newSecondButton.frame = CGRect(x: location.x + 0, y: location.y - 180, width: 50, height: 25) // Position 100 points to the right of the first button
+        newSecondButton.frame = CGRect(x: location.x + 0, y: location.y + 180, width: 50, height: 25) // Position 100 points to the right of the first button
         newSecondButton.setTitle("del", for: .normal)
         newSecondButton.backgroundColor = .systemGreen
         newSecondButton.setTitleColor(.white, for: .normal)
@@ -80,6 +84,32 @@ class CustomCanvasView: PKCanvasView {
         // Add the second button to the view
         superview?.addSubview(newSecondButton)
         secondButton = newSecondButton
+        
+        // Create and configure the third button next to the first one
+        let newThirdButton = UIButton(type: .system)
+        newThirdButton.frame = CGRect(x: location.x + 50, y: location.y + 180, width: 50, height: 25) // Adjust frame as needed
+        newThirdButton.setTitle("?", for: .normal)
+        newThirdButton.backgroundColor = .systemYellow
+        newThirdButton.setTitleColor(.white, for: .normal)
+        newThirdButton.layer.cornerRadius = 10
+        newThirdButton.addTarget(self, action: #selector(buttonTapped3), for: .touchUpInside)
+
+        // Add the third button to the view
+        superview?.addSubview(newThirdButton)
+        thirdButton = newThirdButton
+        
+        // Create and configure the fourth button
+        let newFourthButton = UIButton(type: .system)
+        newFourthButton.frame = CGRect(x: location.x + 100, y: location.y + 180, width: 50, height: 25) // Adjust frame as needed
+        newFourthButton.setTitle(":", for: .normal)
+        newFourthButton.backgroundColor = .systemRed
+        newFourthButton.setTitleColor(.white, for: .normal)
+        newFourthButton.layer.cornerRadius = 10
+        newFourthButton.addTarget(self, action: #selector(buttonTapped4), for: .touchUpInside)
+
+        // Add the fourth button to the view
+        superview?.addSubview(newFourthButton)
+        fourthButton = newFourthButton
         }
 
     @objc func buttonTapped() {
@@ -93,11 +123,20 @@ class CustomCanvasView: PKCanvasView {
     
     @objc func buttonTapped2() {
         print("Button was tapped")
-        if products.last == " "{
+        if products.count > 0{
             products.removeLast()
         }
-        products.removeLast()
-        // Add your button tap handling logic here
+        
+    }
+    
+    @objc func buttonTapped3() {
+        print("Button was tapped")
+        products.append("?")
+    }
+    
+    @objc func buttonTapped4() {
+        print("Button was tapped")
+        products.append(":")
     }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -151,9 +190,14 @@ class CustomCanvasView: PKCanvasView {
             dataManager.x_coordinates.append(Float(location.x))
             dataManager.y_coordinates.append(Float(location.y))
             
-            if end_x_coordinate > 0.0 && (abs(end_x_coordinate - location.x) > 80) || (abs(end_y_coordinate) - location.y > 60){
-                if products.last != " "{
-                    products.append(" ")
+            //space
+            if abs(end_x_coordinate - CGFloat(location.x))>70 || abs(end_y_coordinate - CGFloat(location.y))>100{
+                print(end_x_coordinate - CGFloat(location.x))
+                print(end_y_coordinate - CGFloat(location.y))
+                if end_x_coordinate != 0.0{
+                    if products.last != " "{
+                        products.append(" ")
+                    }
                 }
             }
             
@@ -163,6 +207,16 @@ class CustomCanvasView: PKCanvasView {
                     self.deleteData()
                     strokeCounter = 0
                     self.drawing = PKDrawing()
+                    
+                    // Check if the touch is within any button's frame
+                    if let button1 = firstButton, button1.frame.contains(location) {
+                        return
+                    }
+                    if let button2 = secondButton, button2.frame.contains(location) {
+                        return
+                    }
+                    
+                    
                 }
             }
             
@@ -172,18 +226,23 @@ class CustomCanvasView: PKCanvasView {
                 strokeCounter = 0
                 self.drawing = PKDrawing()
                 print(rlt)
+                
+                // Check if the touch is within any button's frame
+                if let button1 = firstButton, button1.frame.contains(location) {
+                    return
+                }
+                if let button2 = secondButton, button2.frame.contains(location) {
+                    return
+                }
+                
+                
             }
                 
-            // Check if the touch is within any button's frame
-            if let button1 = firstButton, button1.frame.contains(location) {
-                return
-            }
-            if let button2 = secondButton, button2.frame.contains(location) {
-                return
-            }
             
             end_x_coordinate = CGFloat(location.x)
             end_y_coordinate = CGFloat(location.y)
+            
+            
             showButton(at: location)
         }
     }

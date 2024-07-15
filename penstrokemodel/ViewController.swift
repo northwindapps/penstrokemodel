@@ -67,7 +67,8 @@ class ViewController: BaseController, PKCanvasViewDelegate,PKToolPickerObserver 
     func updateProductsLabel() {
         let joinedString = canvasView.products.joined(separator: "")
 
-        let modifiedString = joinedString.replacingOccurrences(of: ".", with: ".\n")
+        var modifiedString = joinedString.replacingOccurrences(of: ".", with: ".\n")
+        modifiedString = modifiedString.replacingOccurrences(of: "?", with: "?\n")
 
         productsLabel.text = modifiedString
     }
