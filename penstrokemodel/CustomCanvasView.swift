@@ -27,6 +27,10 @@ class CustomCanvasView: PKCanvasView {
     }
     private var timer: Timer?
     private var prediction_timer: Timer?
+    private var end_x_coordinate: CGFloat = 0.0
+    private var end_y_coordinate: CGFloat = 0.0
+    private var firstButton: UIButton?
+    private var secondButton: UIButton?
 
 
     // Dependency Injection through initializer
@@ -45,6 +49,50 @@ class CustomCanvasView: PKCanvasView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    func showButton(at location: CGPoint) {
+        // Remove existing buttons if any
+        firstButton?.removeFromSuperview()
+        secondButton?.removeFromSuperview()
+
+        // Create the first button
+        let newFirstButton = UIButton(type: .system)
+        newFirstButton.frame = CGRect(x: location.x - 50, y: location.y - 180, width: 50, height: 25) // Adjust frame as needed
+        newFirstButton.setTitle(".", for: .normal)
+        newFirstButton.backgroundColor = .systemBlue
+        newFirstButton.setTitleColor(.white, for: .normal)
+        newFirstButton.layer.cornerRadius = 10
+        newFirstButton.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
+
+        // Add the first button to the view
+        superview?.addSubview(newFirstButton)
+        firstButton = newFirstButton
+
+        // Create the second button next to the first one
+        let newSecondButton = UIButton(type: .system)
+        newSecondButton.frame = CGRect(x: location.x + 0, y: location.y - 180, width: 50, height: 25) // Position 100 points to the right of the first button
+        newSecondButton.setTitle("del", for: .normal)
+        newSecondButton.backgroundColor = .systemGreen
+        newSecondButton.setTitleColor(.white, for: .normal)
+        newSecondButton.layer.cornerRadius = 10
+        newSecondButton.addTarget(self, action: #selector(buttonTapped2), for: .touchUpInside)
+
+        // Add the second button to the view
+        superview?.addSubview(newSecondButton)
+        secondButton = newSecondButton
+        }
+
+    @objc func buttonTapped() {
+        print("Button was tapped")
+        products.append(".")
+        // Add your button tap handling logic here
+    }
+    
+    @objc func buttonTapped2() {
+        print("Button was tapped")
+        products.removeLast()
+        // Add your button tap handling logic here
+    }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
@@ -61,9 +109,10 @@ class CustomCanvasView: PKCanvasView {
             dataManager.timeStamps.append(String(relativeTimestamp))
             dataManager.x_coordinates.append("\(location.x)")
             dataManager.y_coordinates.append("\(location.y)")
-
         }
     }
+    
+    
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesMoved(touches, with: event)
@@ -77,7 +126,6 @@ class CustomCanvasView: PKCanvasView {
             dataManager.timeStamps.append(String(relativeTimestamp))
             dataManager.x_coordinates.append("\(location.x)")
             dataManager.y_coordinates.append("\(location.y)")
-            
         }
     }
 
@@ -95,21 +143,31 @@ class CustomCanvasView: PKCanvasView {
             dataManager.x_coordinates.append("\(location.x)")
             dataManager.y_coordinates.append("\(location.y)")
             
+            if end_x_coordinate > 0.0 && (abs(end_x_coordinate - location.x) > 60) || (abs(end_y_coordinate) - location.y > 50){
+                if products.last != " "{
+                    products.append(" ")
+                }
+            }
+            
             if strokeCounter == 1{
                 let rlt = performPrediction1stroke(pre_x: dataManager.x_coordinates.compactMap{Float($0)}, pre_y: dataManager.y_coordinates.compactMap{Float($0)}, pre_time: dataManager.timeStamps.compactMap{Float($0)})
                 if rlt{
                     self.deleteData()
                     strokeCounter = 0
+                    self.drawing = PKDrawing()
                 }
             }
             
             if strokeCounter == 2{
-                performPrediction(pre_x: dataManager.x_coordinates.compactMap{Float($0)}, pre_y: dataManager.y_coordinates.compactMap{Float($0)}, pre_time: dataManager.timeStamps.compactMap{Float($0)})
+                let rlt = performPrediction(pre_x: dataManager.x_coordinates.compactMap{Float($0)}, pre_y: dataManager.y_coordinates.compactMap{Float($0)}, pre_time: dataManager.timeStamps.compactMap{Float($0)})
                 self.deleteData()
                 strokeCounter = 0
+                self.drawing = PKDrawing()
             }
-            
-            
+                
+            end_x_coordinate = CGFloat(location.x)
+            end_y_coordinate = CGFloat(location.y)
+            showButton(at: location)
         }
     }
 
@@ -150,24 +208,15 @@ class CustomCanvasView: PKCanvasView {
         dataManager.frame_heights.removeAll()
     }
     
-    private func handleTimer(prex: [String], prey: [String], pretime:[String], event:[String]) {
-        
-    }
-    
-    private func cancelTimer() {
-        prediction_timer?.invalidate()
-        prediction_timer = nil
-        print("timer canceled")
-    }
     
     
-    
-    func performPrediction(pre_x: [Float], pre_y: [Float], pre_time: [Float]) {
+    func performPrediction(pre_x: [Float], pre_y: [Float], pre_time: [Float]) -> Bool {
         if let (label,value) = modelHandler.performPrediction2(pre_x: pre_x, pre_y: pre_y, pre_time: pre_time, maxLength: 57) {
             if value > 0.87{
                 products.append(label)
                 print("Predicted label: \(label)")
                 print("Predicted value: \(value)")
+                return true
                 
             }
             if value <= 0.87{
@@ -178,7 +227,7 @@ class CustomCanvasView: PKCanvasView {
         }else {
             print("Prediction failed")
         }
-        return
+        return false
     }
     
     func performPrediction1stroke(pre_x: [Float], pre_y: [Float], pre_time: [Float]) -> Bool {

@@ -58,26 +58,20 @@ class ViewController: BaseController, PKCanvasViewDelegate,PKToolPickerObserver 
         canvasView.tool = penTool
         canvasView.minimumZoomScale = 1.0
         canvasView.maximumZoomScale = 1.0
-        
-        // Set other canvas configurations
-        if #available(iOS 14.0, *) {
-            canvasView.drawingPolicy = .anyInput
-        }
-        canvasView.allowsFingerDrawing = true
+        canvasView.drawingPolicy = .anyInput
         canvasView.addObserver(self, forKeyPath: "tool", options: .new, context: nil)
         
         
     }
     
     func updateProductsLabel() {
-        canvasView.drawing = PKDrawing()
-            productsLabel.text = canvasView.products.joined(separator: "")
+        let joinedString = canvasView.products.joined(separator: "")
+
+        let modifiedString = joinedString.replacingOccurrences(of: ".", with: ".\n")
+
+        productsLabel.text = modifiedString
     }
     
-    func updateProductsLabel2() {
-        canvasView.drawing = PKDrawing()
-            productsLabel.text = canvasView.products.joined(separator: "")
-    }
 }
     
     
