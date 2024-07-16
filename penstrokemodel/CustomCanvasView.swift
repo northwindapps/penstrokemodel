@@ -64,7 +64,7 @@ class CustomCanvasView: PKCanvasView {
 
         // Create the first button
         let newFirstButton = UIButton(type: .system)
-        newFirstButton.frame = CGRect(x: location.x - 80, y: location.y + 180, width: 80, height: 25) // Adjust frame as needed
+        newFirstButton.frame = CGRect(x: 0.0, y: location.y + 180, width: 80, height: 25) // Adjust frame as needed
         newFirstButton.setTitle(".", for: .normal)
         newFirstButton.backgroundColor = .systemBlue
         newFirstButton.setTitleColor(.white, for: .normal)
@@ -77,7 +77,7 @@ class CustomCanvasView: PKCanvasView {
 
         // Create the second button next to the first one
         let newSecondButton = UIButton(type: .system)
-        newSecondButton.frame = CGRect(x: location.x + 0, y: location.y + 180, width: 80, height: 25) // Position 100 points to the right of the first button
+        newSecondButton.frame = CGRect(x: 80.0, y: location.y + 180, width: 80, height: 25) // Position 100 points to the right of the first button
         newSecondButton.setTitle("del", for: .normal)
         newSecondButton.backgroundColor = .systemGreen
         newSecondButton.setTitleColor(.white, for: .normal)
@@ -90,7 +90,7 @@ class CustomCanvasView: PKCanvasView {
         
         // Create and configure the third button next to the first one
         let newThirdButton = UIButton(type: .system)
-        newThirdButton.frame = CGRect(x: location.x + 80, y: location.y + 180, width: 80, height: 25) // Adjust frame as needed
+        newThirdButton.frame = CGRect(x: 160.0, y: location.y + 180, width: 80, height: 25) // Adjust frame as needed
         newThirdButton.setTitle("?", for: .normal)
         newThirdButton.backgroundColor = .systemYellow
         newThirdButton.setTitleColor(.white, for: .normal)
@@ -103,7 +103,7 @@ class CustomCanvasView: PKCanvasView {
         
         // Create and configure the fourth button
         let newFourthButton = UIButton(type: .system)
-        newFourthButton.frame = CGRect(x: location.x + 160, y: location.y + 180, width: 80, height: 25) // Adjust frame as needed
+        newFourthButton.frame = CGRect(x: 240.0, y: location.y + 180, width: 80, height: 25) // Adjust frame as needed
         newFourthButton.setTitle(":", for: .normal)
         newFourthButton.backgroundColor = .systemRed
         newFourthButton.setTitleColor(.white, for: .normal)
@@ -217,7 +217,7 @@ class CustomCanvasView: PKCanvasView {
             // Perform predictions asynchronously
             if strokeCounter == 1 {
                     let rlt = self.performPrediction1stroke(pre_x: self.localXCoordinates, pre_y: self.localYCoordinates, pre_time: self.localTimeStamps)
-                        if rlt {
+                        if (rlt != nil) {
                             self.deleteLocalData()
                             self.strokeCounter = 0
                             //self.drawing = PKDrawing()
@@ -229,8 +229,14 @@ class CustomCanvasView: PKCanvasView {
                             if let button2 = self.secondButton, button2.frame.contains(location) {
                                 return
                             }
+                            
+                            products.append(rlt!)
+                            end_x_coordinate = location.x
+                            end_y_coordinate = location.y
+                            showButton(at: location)
                         }
                     
+                
                 
             }
 
@@ -239,9 +245,6 @@ class CustomCanvasView: PKCanvasView {
                 let rlt = self.performPrediction(pre_x: self.localXCoordinates, pre_y: self.localYCoordinates, pre_time: self.localTimeStamps)
          
                     self.deleteLocalData()
-                    //self.drawing = PKDrawing()
-                    print(rlt)
-
                     // Check if the touch is within any button's frame
                     if let button1 = self.firstButton, button1.frame.contains(location) {
                         return
@@ -249,14 +252,18 @@ class CustomCanvasView: PKCanvasView {
                     if let button2 = self.secondButton, button2.frame.contains(location) {
                         return
                     }
+                
+                if (rlt != nil){
+                    products.append(rlt!)
+                    end_x_coordinate = location.x
+                    end_y_coordinate = location.y
+                    showButton(at: location)
+                }
                     
                 
             }
 
-            end_x_coordinate = location.x
-            end_y_coordinate = location.y
-
-            showButton(at: location)
+            
         }
     }
 
@@ -307,13 +314,12 @@ class CustomCanvasView: PKCanvasView {
     
     
     
-    func performPrediction(pre_x: [Float], pre_y: [Float], pre_time: [Float]) -> Bool {
+    func performPrediction(pre_x: [Float], pre_y: [Float], pre_time: [Float]) -> String? {
         if let (label,value) = modelHandler.performPrediction2(pre_x: pre_x, pre_y: pre_y, pre_time: pre_time, maxLength: 57) {
             if value > 0.87{
-                products.append(label)
                 print("Predicted label: \(label)")
                 print("Predicted value: \(value)")
-                return true
+                return label
                 
             }
             if value <= 0.87{
@@ -325,17 +331,16 @@ class CustomCanvasView: PKCanvasView {
             print("Prediction failed")
             deleteLocalData()
         }
-        return false
+        return nil
     }
     
-    func performPrediction1stroke(pre_x: [Float], pre_y: [Float], pre_time: [Float]) -> Bool {
+    func performPrediction1stroke(pre_x: [Float], pre_y: [Float], pre_time: [Float]) -> String? {
         if let (label,value) = modelHandler_1stroke.performPrediction1stroke(pre_x: pre_x, pre_y: pre_y, pre_time: pre_time, maxLength: 77) {
             if value > 0.87 && label != "hl" && label != "bksla" && label != "vl3" && label != "vl" && label != "opb" && label != "sla"{
                 
-                products.append(label)
                 print("Predicted label: \(label)")
                 print("Predicted value: \(value)")
-                return true
+                return label
             }
             if value <= 0.87{
                 //y,i,j,x.. two-stroke group
@@ -346,6 +351,6 @@ class CustomCanvasView: PKCanvasView {
             print("Prediction failed")
             //DataManagerRepository.shared.removeAllDataManager()
         }
-        return false
+        return nil
     }
 }

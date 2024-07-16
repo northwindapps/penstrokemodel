@@ -71,6 +71,7 @@ class ViewController: BaseController, PKCanvasViewDelegate,PKToolPickerObserver 
         modifiedString = modifiedString.replacingOccurrences(of: "?", with: "?\n")
 
         productsLabel.text = modifiedString
+        canvasView.drawing = PKDrawing()
     }
     
 }
