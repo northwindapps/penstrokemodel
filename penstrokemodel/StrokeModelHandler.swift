@@ -4,9 +4,8 @@ import Foundation
 class StrokeModelHandler {
     private var interpreter: Interpreter?
     let labels = ["f", "i", "j", "k", "p", "t", "x", "y"]
-    let labels_1stroke = ["-", "a", "b", "c", "d", "e", "g", "h", "l", "m", "n", "o", "q", "r", "s", "u", "v", "w", "z", "|", "|2", "＼"]
-                  //["u","v","x","y"]//["a","e","g","i","j","k","n","o","r","s","t","u","v", "x","y"]
-    //["a", "b", "c", "d", "e", "f", "h", "i", "j", "k", "m", "n", "o", "p", "q", "r", "t", "u", "v", "w"]
+    let labels_1stroke = ["a", "b", "bksla", "c", "d", "e", "g", "h", "hl", "j", "l", "m", "n", "o", "opb", "q",
+         "r", "s", "sla", "u", "v", "vl", "vl3", "w", "z"]
 
     init(modelName: String) {
         guard let modelPath = Bundle.main.path(forResource: modelName, ofType: "tflite") else {

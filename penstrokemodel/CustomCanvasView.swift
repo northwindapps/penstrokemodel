@@ -204,19 +204,19 @@ class CustomCanvasView: PKCanvasView {
             localYCoordinates.append(Float(location.y))
 
             // Check for space
-            if abs(end_x_coordinate - location.x) > 70 || abs(end_y_coordinate - location.y) > 100 {
+            if abs(end_y_coordinate - location.y) > 100 {
                 if end_x_coordinate != 0.0 {
-                    if products.last != " " {
-                        products.append(" ")
+                    if products.count > 0 {
+                        let last = products.last!
+                        products.removeLast()
+                        products.append(last + " ")
                     }
                 }
             }
 
             // Perform predictions asynchronously
             if strokeCounter == 1 {
-              
                     let rlt = self.performPrediction1stroke(pre_x: self.localXCoordinates, pre_y: self.localYCoordinates, pre_time: self.localTimeStamps)
-                    
                         if rlt {
                             self.deleteLocalData()
                             self.strokeCounter = 0
@@ -235,21 +235,20 @@ class CustomCanvasView: PKCanvasView {
             }
 
             if strokeCounter == 2 {
-      
-                    let rlt = self.performPrediction(pre_x: self.localXCoordinates, pre_y: self.localYCoordinates, pre_time: self.localTimeStamps)
-             
-                        self.deleteLocalData()
-                        self.strokeCounter = 0
-                        //self.drawing = PKDrawing()
-                        print(rlt)
+                self.strokeCounter = 0
+                let rlt = self.performPrediction(pre_x: self.localXCoordinates, pre_y: self.localYCoordinates, pre_time: self.localTimeStamps)
+         
+                    self.deleteLocalData()
+                    //self.drawing = PKDrawing()
+                    print(rlt)
 
-                        // Check if the touch is within any button's frame
-                        if let button1 = self.firstButton, button1.frame.contains(location) {
-                            return
-                        }
-                        if let button2 = self.secondButton, button2.frame.contains(location) {
-                            return
-                        }
+                    // Check if the touch is within any button's frame
+                    if let button1 = self.firstButton, button1.frame.contains(location) {
+                        return
+                    }
+                    if let button2 = self.secondButton, button2.frame.contains(location) {
+                        return
+                    }
                     
                 
             }
@@ -331,7 +330,8 @@ class CustomCanvasView: PKCanvasView {
     
     func performPrediction1stroke(pre_x: [Float], pre_y: [Float], pre_time: [Float]) -> Bool {
         if let (label,value) = modelHandler_1stroke.performPrediction1stroke(pre_x: pre_x, pre_y: pre_y, pre_time: pre_time, maxLength: 77) {
-            if value > 0.87 && label != "-" && label != "＼" && label != "|2" && label != "|"{
+            if value > 0.87 && label != "hl" && label != "bksla" && label != "vl3" && label != "vl" && label != "opb" && label != "sla"{
+                
                 products.append(label)
                 print("Predicted label: \(label)")
                 print("Predicted value: \(value)")
