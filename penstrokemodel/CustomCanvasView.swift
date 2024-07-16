@@ -33,6 +33,9 @@ class CustomCanvasView: PKCanvasView {
     private var secondButton: UIButton?
     private var thirdButton: UIButton?
     private var fourthButton: UIButton?
+    private var localTimeStamps: [Float] = []
+    private var localXCoordinates: [Float] = []
+    private var localYCoordinates: [Float] = []
 
 
     // Dependency Injection through initializer
@@ -61,7 +64,7 @@ class CustomCanvasView: PKCanvasView {
 
         // Create the first button
         let newFirstButton = UIButton(type: .system)
-        newFirstButton.frame = CGRect(x: location.x - 50, y: location.y + 180, width: 50, height: 25) // Adjust frame as needed
+        newFirstButton.frame = CGRect(x: location.x - 80, y: location.y + 180, width: 80, height: 25) // Adjust frame as needed
         newFirstButton.setTitle(".", for: .normal)
         newFirstButton.backgroundColor = .systemBlue
         newFirstButton.setTitleColor(.white, for: .normal)
@@ -74,7 +77,7 @@ class CustomCanvasView: PKCanvasView {
 
         // Create the second button next to the first one
         let newSecondButton = UIButton(type: .system)
-        newSecondButton.frame = CGRect(x: location.x + 0, y: location.y + 180, width: 50, height: 25) // Position 100 points to the right of the first button
+        newSecondButton.frame = CGRect(x: location.x + 0, y: location.y + 180, width: 80, height: 25) // Position 100 points to the right of the first button
         newSecondButton.setTitle("del", for: .normal)
         newSecondButton.backgroundColor = .systemGreen
         newSecondButton.setTitleColor(.white, for: .normal)
@@ -87,7 +90,7 @@ class CustomCanvasView: PKCanvasView {
         
         // Create and configure the third button next to the first one
         let newThirdButton = UIButton(type: .system)
-        newThirdButton.frame = CGRect(x: location.x + 50, y: location.y + 180, width: 50, height: 25) // Adjust frame as needed
+        newThirdButton.frame = CGRect(x: location.x + 80, y: location.y + 180, width: 80, height: 25) // Adjust frame as needed
         newThirdButton.setTitle("?", for: .normal)
         newThirdButton.backgroundColor = .systemYellow
         newThirdButton.setTitleColor(.white, for: .normal)
@@ -100,7 +103,7 @@ class CustomCanvasView: PKCanvasView {
         
         // Create and configure the fourth button
         let newFourthButton = UIButton(type: .system)
-        newFourthButton.frame = CGRect(x: location.x + 100, y: location.y + 180, width: 50, height: 25) // Adjust frame as needed
+        newFourthButton.frame = CGRect(x: location.x + 160, y: location.y + 180, width: 80, height: 25) // Adjust frame as needed
         newFourthButton.setTitle(":", for: .normal)
         newFourthButton.backgroundColor = .systemRed
         newFourthButton.setTitleColor(.white, for: .normal)
@@ -118,7 +121,9 @@ class CustomCanvasView: PKCanvasView {
             products.removeLast()
         }
         products.append(".")
-        // Add your button tap handling logic here
+        deleteLocalData()
+        strokeCounter = 0
+        self.drawing = PKDrawing()
     }
     
     @objc func buttonTapped2() {
@@ -126,17 +131,25 @@ class CustomCanvasView: PKCanvasView {
         if products.count > 0{
             products.removeLast()
         }
-        
+        deleteLocalData()
+        strokeCounter = 0
+        self.drawing = PKDrawing()
     }
     
     @objc func buttonTapped3() {
         print("Button was tapped")
         products.append("?")
+        deleteLocalData()
+        strokeCounter = 0
+        self.drawing = PKDrawing()
     }
     
     @objc func buttonTapped4() {
         print("Button was tapped")
         products.append(":")
+        deleteLocalData()
+        strokeCounter = 0
+        self.drawing = PKDrawing()
     }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -151,10 +164,12 @@ class CustomCanvasView: PKCanvasView {
             let relativeTimestamp = (timestamp - startTime) * 1000 // convert to milliseconds
             
             //store data
-            dataManager.timeStamps.append(Float(relativeTimestamp))
-            dataManager.x_coordinates.append(Float(location.x))
-            dataManager.y_coordinates.append(Float(location.y))
-            
+//            dataManager.timeStamps.append(Float(relativeTimestamp))
+//            dataManager.x_coordinates.append(Float(location.x))
+//            dataManager.y_coordinates.append(Float(location.y))
+            localTimeStamps.append(Float(relativeTimestamp))
+            localXCoordinates.append(Float(location.x))
+            localYCoordinates.append(Float(location.y))
         }
     }
     
@@ -168,11 +183,10 @@ class CustomCanvasView: PKCanvasView {
             let relativeTimestamp = (timestamp - startTime) * 1000 // convert to milliseconds
             //print("Touch moved to: \(location), timestamp: \(relativeTimestamp) ms")
             
-            DispatchQueue.global(qos: .background).async {
-                self.dataManager.timeStamps.append(Float(relativeTimestamp))
-                self.dataManager.x_coordinates.append(Float(location.x))
-                self.dataManager.y_coordinates.append(Float(location.y))
-            }
+            localTimeStamps.append(Float(relativeTimestamp))
+            localXCoordinates.append(Float(location.x))
+            localYCoordinates.append(Float(location.y))
+            
         }
     }
 
@@ -183,69 +197,70 @@ class CustomCanvasView: PKCanvasView {
             let location = touch.location(in: self)
             let timestamp = touch.timestamp
             let relativeTimestamp = (timestamp - startTime) * 1000 // convert to milliseconds
-            //print("Touch ended at: \(location), timestamp: \(relativeTimestamp) ms")
-            
-            //store data
-            dataManager.timeStamps.append(Float(relativeTimestamp))
-            dataManager.x_coordinates.append(Float(location.x))
-            dataManager.y_coordinates.append(Float(location.y))
-            
-            //space
-            if abs(end_x_coordinate - CGFloat(location.x))>70 || abs(end_y_coordinate - CGFloat(location.y))>100{
-                print(end_x_coordinate - CGFloat(location.x))
-                print(end_y_coordinate - CGFloat(location.y))
-                if end_x_coordinate != 0.0{
-                    if products.last != " "{
+
+            // Store data
+            localTimeStamps.append(Float(relativeTimestamp))
+            localXCoordinates.append(Float(location.x))
+            localYCoordinates.append(Float(location.y))
+
+            // Check for space
+            if abs(end_x_coordinate - location.x) > 70 || abs(end_y_coordinate - location.y) > 100 {
+                if end_x_coordinate != 0.0 {
+                    if products.last != " " {
                         products.append(" ")
                     }
                 }
             }
-            
-            if strokeCounter == 1{
-                let rlt = performPrediction1stroke(pre_x: dataManager.x_coordinates.compactMap{Float($0)}, pre_y: dataManager.y_coordinates.compactMap{Float($0)}, pre_time: dataManager.timeStamps.compactMap{Float($0)})
-                if rlt{
-                    self.deleteData()
-                    strokeCounter = 0
-                    self.drawing = PKDrawing()
+
+            // Perform predictions asynchronously
+            if strokeCounter == 1 {
+              
+                    let rlt = self.performPrediction1stroke(pre_x: self.localXCoordinates, pre_y: self.localYCoordinates, pre_time: self.localTimeStamps)
                     
-                    // Check if the touch is within any button's frame
-                    if let button1 = firstButton, button1.frame.contains(location) {
-                        return
-                    }
-                    if let button2 = secondButton, button2.frame.contains(location) {
-                        return
-                    }
+                        if rlt {
+                            self.deleteLocalData()
+                            self.strokeCounter = 0
+                            //self.drawing = PKDrawing()
+
+                            // Check if the touch is within any button's frame
+                            if let button1 = self.firstButton, button1.frame.contains(location) {
+                                return
+                            }
+                            if let button2 = self.secondButton, button2.frame.contains(location) {
+                                return
+                            }
+                        }
                     
-                    
-                }
-            }
-            
-            if strokeCounter == 2{
-                let rlt = performPrediction(pre_x: dataManager.x_coordinates.compactMap{Float($0)}, pre_y: dataManager.y_coordinates.compactMap{Float($0)}, pre_time: dataManager.timeStamps.compactMap{Float($0)})
-                self.deleteData()
-                strokeCounter = 0
-                self.drawing = PKDrawing()
-                print(rlt)
-                
-                // Check if the touch is within any button's frame
-                if let button1 = firstButton, button1.frame.contains(location) {
-                    return
-                }
-                if let button2 = secondButton, button2.frame.contains(location) {
-                    return
-                }
-                
                 
             }
+
+            if strokeCounter == 2 {
+      
+                    let rlt = self.performPrediction(pre_x: self.localXCoordinates, pre_y: self.localYCoordinates, pre_time: self.localTimeStamps)
+             
+                        self.deleteLocalData()
+                        self.strokeCounter = 0
+                        //self.drawing = PKDrawing()
+                        print(rlt)
+
+                        // Check if the touch is within any button's frame
+                        if let button1 = self.firstButton, button1.frame.contains(location) {
+                            return
+                        }
+                        if let button2 = self.secondButton, button2.frame.contains(location) {
+                            return
+                        }
+                    
                 
-            
-            end_x_coordinate = CGFloat(location.x)
-            end_y_coordinate = CGFloat(location.y)
-            
-            
+            }
+
+            end_x_coordinate = location.x
+            end_y_coordinate = location.y
+
             showButton(at: location)
         }
     }
+
 
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesCancelled(touches, with: event)
@@ -272,16 +287,23 @@ class CustomCanvasView: PKCanvasView {
         return copy
     }
     
-    func deleteData(){
+//    func deleteData(){
+//        //store data
+//        dataManager.timeStamps.removeAll()
+//        dataManager.events.removeAll()
+//        dataManager.annotations.removeAll()
+//        dataManager.sample_tags.removeAll()
+//        dataManager.x_coordinates.removeAll()
+//        dataManager.y_coordinates.removeAll()
+//        dataManager.frame_widths.removeAll()
+//        dataManager.frame_heights.removeAll()
+//    }
+    
+    func deleteLocalData(){
         //store data
-        dataManager.timeStamps.removeAll()
-        dataManager.events.removeAll()
-        dataManager.annotations.removeAll()
-        dataManager.sample_tags.removeAll()
-        dataManager.x_coordinates.removeAll()
-        dataManager.y_coordinates.removeAll()
-        dataManager.frame_widths.removeAll()
-        dataManager.frame_heights.removeAll()
+        localTimeStamps.removeAll()
+        localXCoordinates.removeAll()
+        localYCoordinates.removeAll()
     }
     
     
@@ -302,6 +324,7 @@ class CustomCanvasView: PKCanvasView {
             }
         }else {
             print("Prediction failed")
+            deleteLocalData()
         }
         return false
     }
