@@ -23,12 +23,12 @@
 		2BC49FED2C44BE7900FEBD53 /* pen_stroke_model2strokes.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 2BC49FEC2C44BE7900FEBD53 /* pen_stroke_model2strokes.tflite */; };
 		2BC49FEE2C44BE7900FEBD53 /* pen_stroke_model2strokes.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 2BC49FEC2C44BE7900FEBD53 /* pen_stroke_model2strokes.tflite */; };
 		2BC49FEF2C44BE7900FEBD53 /* pen_stroke_model2strokes.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 2BC49FEC2C44BE7900FEBD53 /* pen_stroke_model2strokes.tflite */; };
-		2BC4A0052C46888700FEBD53 /* pen_stroke_model1stroke.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 2BC4A0042C46888700FEBD53 /* pen_stroke_model1stroke.tflite */; };
-		2BC4A0062C46888700FEBD53 /* pen_stroke_model1stroke.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 2BC4A0042C46888700FEBD53 /* pen_stroke_model1stroke.tflite */; };
-		2BC4A0072C46888700FEBD53 /* pen_stroke_model1stroke.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 2BC4A0042C46888700FEBD53 /* pen_stroke_model1stroke.tflite */; };
 		2BC4A0092C4695CC00FEBD53 /* pen_stroke_model1stroke_ng.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 2BC4A0082C4695CC00FEBD53 /* pen_stroke_model1stroke_ng.tflite */; };
 		2BC4A00A2C4695CC00FEBD53 /* pen_stroke_model1stroke_ng.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 2BC4A0082C4695CC00FEBD53 /* pen_stroke_model1stroke_ng.tflite */; };
 		2BC4A00B2C4695CC00FEBD53 /* pen_stroke_model1stroke_ng.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 2BC4A0082C4695CC00FEBD53 /* pen_stroke_model1stroke_ng.tflite */; };
+		2BC4A00D2C46ABA700FEBD53 /* pen_stroke_model1stroke.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 2BC4A00C2C46ABA700FEBD53 /* pen_stroke_model1stroke.tflite */; };
+		2BC4A00E2C46ABA700FEBD53 /* pen_stroke_model1stroke.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 2BC4A00C2C46ABA700FEBD53 /* pen_stroke_model1stroke.tflite */; };
+		2BC4A00F2C46ABA700FEBD53 /* pen_stroke_model1stroke.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 2BC4A00C2C46ABA700FEBD53 /* pen_stroke_model1stroke.tflite */; };
 		2BC5918E2C3EBBA5008FB383 /* StrokeModelHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B88695D2C39A3D400419C85 /* StrokeModelHandler.swift */; };
 		2BC5918F2C3EBBA6008FB383 /* StrokeModelHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B88695D2C39A3D400419C85 /* StrokeModelHandler.swift */; };
 		2BCA1ADB2C43CD0800160B51 /* old_pen_stroke_model2strokes.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 2BCA1ADA2C43CD0800160B51 /* old_pen_stroke_model2strokes.tflite */; };
@@ -73,8 +73,8 @@
 		2B88695B2C398A5900419C85 /* CustomCanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomCanvasView.swift; sourceTree = "<group>"; };
 		2B88695D2C39A3D400419C85 /* StrokeModelHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrokeModelHandler.swift; sourceTree = "<group>"; };
 		2BC49FEC2C44BE7900FEBD53 /* pen_stroke_model2strokes.tflite */ = {isa = PBXFileReference; lastKnownFileType = file; path = pen_stroke_model2strokes.tflite; sourceTree = "<group>"; };
-		2BC4A0042C46888700FEBD53 /* pen_stroke_model1stroke.tflite */ = {isa = PBXFileReference; lastKnownFileType = file; path = pen_stroke_model1stroke.tflite; sourceTree = "<group>"; };
 		2BC4A0082C4695CC00FEBD53 /* pen_stroke_model1stroke_ng.tflite */ = {isa = PBXFileReference; lastKnownFileType = file; path = pen_stroke_model1stroke_ng.tflite; sourceTree = "<group>"; };
+		2BC4A00C2C46ABA700FEBD53 /* pen_stroke_model1stroke.tflite */ = {isa = PBXFileReference; lastKnownFileType = file; path = pen_stroke_model1stroke.tflite; sourceTree = "<group>"; };
 		2BCA1ADA2C43CD0800160B51 /* old_pen_stroke_model2strokes.tflite */ = {isa = PBXFileReference; lastKnownFileType = file; path = old_pen_stroke_model2strokes.tflite; sourceTree = "<group>"; };
 		4953BBCDB4B9F567EDB7E29B /* Pods-penstrokemodel.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-penstrokemodel.release.xcconfig"; path = "Target Support Files/Pods-penstrokemodel/Pods-penstrokemodel.release.xcconfig"; sourceTree = "<group>"; };
 		5F2964705EA826B6B8B07071 /* Pods_penstrokemodel.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_penstrokemodel.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -145,7 +145,7 @@
 				2B8868CB2C384F4300419C85 /* Info.plist */,
 				2BC49FEC2C44BE7900FEBD53 /* pen_stroke_model2strokes.tflite */,
 				2BC4A0082C4695CC00FEBD53 /* pen_stroke_model1stroke_ng.tflite */,
-				2BC4A0042C46888700FEBD53 /* pen_stroke_model1stroke.tflite */,
+				2BC4A00C2C46ABA700FEBD53 /* pen_stroke_model1stroke.tflite */,
 				2BCA1ADA2C43CD0800160B51 /* old_pen_stroke_model2strokes.tflite */,
 			);
 			path = penstrokemodel;
@@ -291,13 +291,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2BC4A00D2C46ABA700FEBD53 /* pen_stroke_model1stroke.tflite in Resources */,
 				2B8868C72C384F4300419C85 /* Assets.xcassets in Resources */,
 				2BC4A0092C4695CC00FEBD53 /* pen_stroke_model1stroke_ng.tflite in Resources */,
 				2BC49FED2C44BE7900FEBD53 /* pen_stroke_model2strokes.tflite in Resources */,
 				2B8868CA2C384F4300419C85 /* Base in Resources */,
 				2BCA1ADB2C43CD0800160B51 /* old_pen_stroke_model2strokes.tflite in Resources */,
 				2B8868C52C384F4000419C85 /* Base in Resources */,
-				2BC4A0052C46888700FEBD53 /* pen_stroke_model1stroke.tflite in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -307,8 +307,8 @@
 			files = (
 				2BCA1ADC2C43CD0800160B51 /* old_pen_stroke_model2strokes.tflite in Resources */,
 				2BC49FEE2C44BE7900FEBD53 /* pen_stroke_model2strokes.tflite in Resources */,
-				2BC4A0062C46888700FEBD53 /* pen_stroke_model1stroke.tflite in Resources */,
 				2BC4A00A2C4695CC00FEBD53 /* pen_stroke_model1stroke_ng.tflite in Resources */,
+				2BC4A00E2C46ABA700FEBD53 /* pen_stroke_model1stroke.tflite in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -318,8 +318,8 @@
 			files = (
 				2BCA1ADD2C43CD0800160B51 /* old_pen_stroke_model2strokes.tflite in Resources */,
 				2BC49FEF2C44BE7900FEBD53 /* pen_stroke_model2strokes.tflite in Resources */,
-				2BC4A0072C46888700FEBD53 /* pen_stroke_model1stroke.tflite in Resources */,
 				2BC4A00B2C4695CC00FEBD53 /* pen_stroke_model1stroke_ng.tflite in Resources */,
+				2BC4A00F2C46ABA700FEBD53 /* pen_stroke_model1stroke.tflite in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

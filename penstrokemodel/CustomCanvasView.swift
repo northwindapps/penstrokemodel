@@ -347,7 +347,7 @@ class CustomCanvasView: PKCanvasView {
     }
     
     func performPrediction1stroke(pre_x: [Float], pre_y: [Float], pre_time: [Float]) -> Bool {
-        if let (label,value) = modelHandler_1stroke.performPrediction1stroke(pre_x: pre_x, pre_y: pre_y, pre_time: pre_time, maxLength: 74) {
+        if let (label,value) = modelHandler_1stroke.performPrediction1stroke(pre_x: pre_x, pre_y: pre_y, pre_time: pre_time, maxLength: 77) {
             if value > 0.87 && label != "vl" && label != "hl" && label != "opb" && label != "sla" && label != "bksla" && label != "vl3"{
                 products.append(label)
                 products.removeAll(where: { $0 == " " })
