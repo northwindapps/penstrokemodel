@@ -19,7 +19,7 @@ class CustomCanvasView: PKCanvasView {
     var modelHandler_1stroke: StrokeModelHandler!
     var products: [String] {
         didSet {
-            print("Products changed to: \(products)")
+            //print("Products changed to: \(products)")
             if let viewController = window?.rootViewController as? ViewController {
                 viewController.updateProductsLabel()
             }
@@ -36,6 +36,10 @@ class CustomCanvasView: PKCanvasView {
     private var localTimeStamps: [Float] = []
     private var localXCoordinates: [Float] = []
     private var localYCoordinates: [Float] = []
+    //for seconds stroke data
+    private var bk_localTimeStamps: [Float] = []
+    private var bk_localXCoordinates: [Float] = []
+    private var bk_localYCoordinates: [Float] = []
 
 
     // Dependency Injection through initializer
