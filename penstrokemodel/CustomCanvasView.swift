@@ -162,7 +162,7 @@ class CustomCanvasView: PKCanvasView {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
         startTime = 0
-        deleteData()
+        //deleteData()
         deleteLocalData()
         if let touch = touches.first {
             let location = touch.location(in: self)
@@ -212,43 +212,38 @@ class CustomCanvasView: PKCanvasView {
             localXCoordinates.append(Float(location.x))
             localYCoordinates.append(Float(location.y))
             localAnnotations.append(self.annotation)
-            dataManager.timeStamps = localTimeStamps
-            dataManager.x_coordinates = localXCoordinates
-            dataManager.y_coordinates = localYCoordinates
-            dataManager.annotations = localAnnotations
-            
+            gcd()
         
 
             // Check for space
-            if  abs(end_y_coordinate - location.y) > 100 {
-                if end_x_coordinate != 0.0 {
-                    if products.count > 0 {
-                        let last = products.last!
-                        products.removeLast()
-                        products.append(last + " ")
-                    }
-                }
-            }
-
-            // Perform predictions asynchronously
-            if strokeCounter == 1 {
-                self.strokeCounter = 0
-                let rlt = self.performPrediction1stroke(pre_x: dataManager.x_coordinates, pre_y: dataManager.y_coordinates, pre_time: dataManager.timeStamps)
-                    
-                        if rlt {
-                            self.drawing = PKDrawing()
-
-                            // Check if the touch is within any button's frame
-                            if let button1 = self.firstButton, button1.frame.contains(location) {
-                                return
-                            }
-                            if let button2 = self.secondButton, button2.frame.contains(location) {
-                                return
-                            }
-                        }
-                    
-                
-            }
+//            if  abs(end_y_coordinate - location.y) > 100 {
+//                if end_x_coordinate != 0.0 {
+//                    if products.count > 0 {
+//                        let last = products.last!
+//                        products.removeLast()
+//                        products.append(last + " ")
+//                    }
+//                }
+//            }
+//
+//            // Perform predictions asynchronously
+//            if strokeCounter == 1 {
+//                self.strokeCounter = 0
+//                let rlt = self.performPrediction1stroke(pre_x: dataManager.x_coordinates, pre_y: dataManager.y_coordinates, pre_time: dataManager.timeStamps)
+//                    
+//                        if rlt {
+//
+//                            // Check if the touch is within any button's frame
+//                            if let button1 = self.firstButton, button1.frame.contains(location) {
+//                                return
+//                            }
+//                            if let button2 = self.secondButton, button2.frame.contains(location) {
+//                                return
+//                            }
+//                        }
+//                    
+//                
+//            }
 
 //            if strokeCounter == 2 {
 //                    let rlt = self.performPrediction(pre_x: self.localXCoordinates, pre_y: self.localYCoordinates, pre_time: self.localTimeStamps)
@@ -269,15 +264,38 @@ class CustomCanvasView: PKCanvasView {
 //                deleteData()
 //            }
 
-            end_x_coordinate = location.x
-            end_y_coordinate = location.y
-            self.drawing = PKDrawing()
+//            end_x_coordinate = location.x
+//            end_y_coordinate = location.y
 
-            showButton(at: location)
+            //showButton(at: location)
         }
     }
 
 
+    func gcd(){
+        DispatchQueue.global(qos: .background).async {
+            print("This is run on a background thread")
+            self.dataManager.timeStamps = self.localTimeStamps
+            self.dataManager.x_coordinates = self.localXCoordinates
+            self.dataManager.y_coordinates = self.localYCoordinates
+            self.dataManager.annotations = self.localAnnotations
+            //self.addToManager()
+            
+            // Perform predictions asynchronously
+            let rlt = self.performPrediction1stroke(pre_x: self.dataManager.x_coordinates, pre_y: self.dataManager.y_coordinates, pre_time: self.dataManager.timeStamps)
+
+                        
+                
+            
+
+            DispatchQueue.main.async {
+                print("This is run on the main thread")
+                if (rlt != nil) {
+                    self.products.append(rlt!)
+                }
+            }
+        }
+    }
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesCancelled(touches, with: event)
         if let touch = touches.first {
@@ -346,14 +364,13 @@ class CustomCanvasView: PKCanvasView {
         return false
     }
     
-    func performPrediction1stroke(pre_x: [Float], pre_y: [Float], pre_time: [Float]) -> Bool {
+    func performPrediction1stroke(pre_x: [Float], pre_y: [Float], pre_time: [Float]) -> String? {
         if let (label,value) = modelHandler_1stroke.performPrediction1stroke(pre_x: pre_x, pre_y: pre_y, pre_time: pre_time, maxLength: 77) {
             if value > 0.87 && label != "vl" && label != "hl" && label != "opb" && label != "sla" && label != "bksla" && label != "vl3"{
-                products.append(label)
-                products.removeAll(where: { $0 == " " })
+//                products.removeAll(where: { $0 == " " })
                 print("Predicted label: \(label)")
                 print("Predicted value: \(value)")
-                return true
+                return label
             }
             if value <= 0.87{
                 //y,i,j,x.. two-stroke group
@@ -364,6 +381,6 @@ class CustomCanvasView: PKCanvasView {
             print("Prediction failed")
             //DataManagerRepository.shared.removeAllDataManager()
         }
-        return false
+        return nil
     }
 }
