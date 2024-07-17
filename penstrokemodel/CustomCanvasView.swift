@@ -159,6 +159,7 @@ class CustomCanvasView: PKCanvasView {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
         startTime = 0
+        deleteLocalData()
         if let touch = touches.first {
             let location = touch.location(in: self)
             let timestamp = touch.timestamp
@@ -197,7 +198,6 @@ class CustomCanvasView: PKCanvasView {
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesEnded(touches, with: event)
         if let touch = touches.first {
-            strokeCounter += 1
             let location = touch.location(in: self)
             let timestamp = touch.timestamp
             let relativeTimestamp = (timestamp - startTime) * 1000 // convert to milliseconds
@@ -206,68 +206,103 @@ class CustomCanvasView: PKCanvasView {
             localTimeStamps.append(Float(relativeTimestamp))
             localXCoordinates.append(Float(location.x))
             localYCoordinates.append(Float(location.y))
-
+            gcd()
             // Check for space
-            if abs(end_y_coordinate - location.y) > 100 {
-                if end_x_coordinate != 0.0 {
-                    if products.count > 0 {
-                        let last = products.last!
-                        products.removeLast()
-                        products.append(last + " ")
-                    }
-                }
-            }
+//            if abs(end_y_coordinate - location.y) > 100 {
+//                if end_x_coordinate != 0.0 {
+//                    if products.count > 0 {
+//                        let last = products.last!
+//                        products.removeLast()
+//                        products.append(last + " ")
+//                    }
+//                }
+//            }
 
             // Perform predictions asynchronously
-            if strokeCounter == 1 {
-                    let rlt = self.performPrediction1stroke(pre_x: self.localXCoordinates, pre_y: self.localYCoordinates, pre_time: self.localTimeStamps)
-                        if (rlt != nil) {
-                            self.deleteLocalData()
-                            self.strokeCounter = 0
-                            //self.drawing = PKDrawing()
-
-                            // Check if the touch is within any button's frame
-                            if let button1 = self.firstButton, button1.frame.contains(location) {
-                                return
-                            }
-                            if let button2 = self.secondButton, button2.frame.contains(location) {
-                                return
-                            }
-                            
-                            products.append(rlt!)
-                            end_x_coordinate = location.x
-                            end_y_coordinate = location.y
-                            showButton(at: location)
-                        }
-                    
-                
-                
-            }
-
-            if strokeCounter == 2 {
-                self.strokeCounter = 0
-                let rlt = self.performPrediction(pre_x: self.localXCoordinates, pre_y: self.localYCoordinates, pre_time: self.localTimeStamps)
-         
-                    self.deleteLocalData()
-                    // Check if the touch is within any button's frame
-                    if let button1 = self.firstButton, button1.frame.contains(location) {
-                        return
-                    }
-                    if let button2 = self.secondButton, button2.frame.contains(location) {
-                        return
-                    }
-                
-                if (rlt != nil){
-                    products.append(rlt!)
-                    end_x_coordinate = location.x
-                    end_y_coordinate = location.y
-                    showButton(at: location)
-                }
-                    
-                
-            }
+//            if strokeCounter == 1 {
+//                    let rlt = self.performPrediction1stroke(pre_x: self.localXCoordinates, pre_y: self.localYCoordinates, pre_time: self.localTimeStamps)
+//                        if (rlt != nil) {
+//                            self.deleteLocalData()
+//                            self.strokeCounter = 0
+//                            //self.drawing = PKDrawing()
+//
+//                            // Check if the touch is within any button's frame
+//                            if let button1 = self.firstButton, button1.frame.contains(location) {
+//                                return
+//                            }
+//                            if let button2 = self.secondButton, button2.frame.contains(location) {
+//                                return
+//                            }
+//                            
+//                            products.append(rlt!)
+//                            end_x_coordinate = location.x
+//                            end_y_coordinate = location.y
+//                            showButton(at: location)
+//                        }
+//                    
+//                
+//                
+//            }
+//
+//            if strokeCounter == 2 {
+//                self.strokeCounter = 0
+//                let rlt = self.performPrediction(pre_x: self.localXCoordinates, pre_y: self.localYCoordinates, pre_time: self.localTimeStamps)
+//         
+//                    self.deleteLocalData()
+//                    // Check if the touch is within any button's frame
+//                    if let button1 = self.firstButton, button1.frame.contains(location) {
+//                        return
+//                    }
+//                    if let button2 = self.secondButton, button2.frame.contains(location) {
+//                        return
+//                    }
+//                
+//                if (rlt != nil){
+//                    products.append(rlt!)
+//                    end_x_coordinate = location.x
+//                    end_y_coordinate = location.y
+//                    showButton(at: location)
+//                }
+//                    
+//                
+//            }
 
             
+        }
+    }
+    
+    func gcd(){
+        DispatchQueue.global(qos: .background).async {
+            print("This is run on a background thread")
+            self.dataManager.timeStamps = self.localTimeStamps
+            self.dataManager.x_coordinates = self.localXCoordinates
+            self.dataManager.y_coordinates = self.localYCoordinates
+            //self.addToManager()
+            
+            var rlt:String?
+            if self.strokeCounter == 1 {
+                // Perform predictions asynchronously
+                rlt = self.performPrediction1stroke(pre_x: self.dataManager.x_coordinates, pre_y: self.dataManager.y_coordinates, pre_time: self.dataManager.timeStamps)
+                if rlt == nil{
+                    self.strokeCounter = 0
+                    self.deleteData()
+                }
+            }
+                
+            if self.strokeCounter == 2 {
+                self.strokeCounter = 0
+                
+                rlt = self.performPrediction(pre_x: self.dataManager.x_coordinates, pre_y: self.dataManager.y_coordinates, pre_time: self.dataManager.timeStamps)
+                self.deleteData()
+ 
+            }
+
+            DispatchQueue.main.async {
+                print("This is run on the main thread")
+                if (rlt != nil) {
+                    self.products.append(rlt!)
+                }
+            }
         }
     }
 
@@ -297,17 +332,17 @@ class CustomCanvasView: PKCanvasView {
         return copy
     }
     
-//    func deleteData(){
-//        //store data
-//        dataManager.timeStamps.removeAll()
-//        dataManager.events.removeAll()
-//        dataManager.annotations.removeAll()
-//        dataManager.sample_tags.removeAll()
-//        dataManager.x_coordinates.removeAll()
-//        dataManager.y_coordinates.removeAll()
-//        dataManager.frame_widths.removeAll()
-//        dataManager.frame_heights.removeAll()
-//    }
+    func deleteData(){
+        //store data
+        dataManager.timeStamps.removeAll()
+        dataManager.events.removeAll()
+        dataManager.annotations.removeAll()
+        dataManager.sample_tags.removeAll()
+        dataManager.x_coordinates.removeAll()
+        dataManager.y_coordinates.removeAll()
+        dataManager.frame_widths.removeAll()
+        dataManager.frame_heights.removeAll()
+    }
     
     func deleteLocalData(){
         //store data
