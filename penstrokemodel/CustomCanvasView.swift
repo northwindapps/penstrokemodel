@@ -34,6 +34,7 @@ class CustomCanvasView: PKCanvasView {
     private var secondButton: UIButton?
     private var thirdButton: UIButton?
     private var fourthButton: UIButton?
+    private var fifthButton: UIButton?
     private var localTimeStamps: [Float] = []
     private var localXCoordinates: [Float] = []
     private var localYCoordinates: [Float] = []
@@ -41,7 +42,18 @@ class CustomCanvasView: PKCanvasView {
     private var bk_localTimeStamps: [Float] = []
     private var bk_localXCoordinates: [Float] = []
     private var bk_localYCoordinates: [Float] = []
-
+    
+    // Define the UILabel
+    private let label: UILabel = {
+        let label = UILabel()
+        label.text = "Your Text Here"
+        label.font = UIFont.systemFont(ofSize: 20)
+        label.textColor = .black
+        label.numberOfLines = 20
+        label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
 
     // Dependency Injection through initializer
     init(dataManager: DataManagerProtocol, annotation: String = "", products: [String] = []) {
@@ -55,10 +67,41 @@ class CustomCanvasView: PKCanvasView {
         modelHandler = StrokeModelHandler(modelName: "pen_stroke_model2strokes")
         modelHandler_1stroke = StrokeModelHandler(modelName: "pen_stroke_model1stroke")
         super.init(frame: .zero)
-    }
+        
+        // Add label to the superview
+        self.addSubview(label)
+        
+        // Set constraints for the label
+        NSLayoutConstraint.activate([
+            label.topAnchor.constraint(equalTo: self.topAnchor, constant: 16), // Add padding from the top if needed
+            label.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16), // Add padding from the left if needed
+            label.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -16), // Add padding from the right if needed
+            label.heightAnchor.constraint(equalToConstant: 600) // Set height to 100 points
+        ])
+}
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func startTimer() {
+        timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(timerFired), userInfo: nil, repeats: false)
+    }
+
+    @objc func timerFired() {
+        DispatchQueue.main.async {
+            self.products = self.products2
+        }
+    }
+    
+    func updateProductsLabel() {
+        let joinedString = products2.joined(separator: "")
+
+        var modifiedString = joinedString.replacingOccurrences(of: ".", with: ".\n")
+        modifiedString = modifiedString.replacingOccurrences(of: "?", with: "?\n")
+
+        label.text = modifiedString
+        //self.drawing = PKDrawing()
     }
     
     func showButton(at location: CGPoint) {
@@ -67,6 +110,7 @@ class CustomCanvasView: PKCanvasView {
         secondButton?.removeFromSuperview()
         thirdButton?.removeFromSuperview()
         fourthButton?.removeFromSuperview()
+        fifthButton?.removeFromSuperview()
 
         // Create the first button
         let newFirstButton = UIButton(type: .system)
@@ -119,14 +163,25 @@ class CustomCanvasView: PKCanvasView {
         // Add the fourth button to the view
         superview?.addSubview(newFourthButton)
         fourthButton = newFourthButton
+        
+        // Create and configure the fourth button
+        let newFifthButton = UIButton(type: .system)
+        newFifthButton.frame = CGRect(x: 320.0, y: location.y + 180, width: 80, height: 25) // Adjust frame as needed
+        newFifthButton.setTitle("space", for: .normal)
+        newFifthButton.backgroundColor = .systemGray
+        newFifthButton.setTitleColor(.white, for: .normal)
+        newFifthButton.layer.cornerRadius = 10
+        newFifthButton.addTarget(self, action: #selector(buttonTapped5), for: .touchUpInside)
+
+        // Add the fourth button to the view
+        superview?.addSubview(newFifthButton)
+        fifthButton = newFifthButton
         }
 
     @objc func buttonTapped() {
         print("Button was tapped")
-        if products.last == " "{
-            products.removeLast()
-        }
-        products.append(".")
+        products2.append(".")
+        self.updateProductsLabel()
         deleteLocalData()
         strokeCounter = 0
         self.drawing = PKDrawing()
@@ -134,9 +189,10 @@ class CustomCanvasView: PKCanvasView {
     
     @objc func buttonTapped2() {
         print("Button was tapped")
-        if products.count > 0{
-            products.removeLast()
+        if products2.count > 0{
+            products2.removeLast()
         }
+        self.updateProductsLabel()
         deleteLocalData()
         strokeCounter = 0
         self.drawing = PKDrawing()
@@ -144,7 +200,8 @@ class CustomCanvasView: PKCanvasView {
     
     @objc func buttonTapped3() {
         print("Button was tapped")
-        products.append("?")
+        products2.append("?")
+        self.updateProductsLabel()
         deleteLocalData()
         strokeCounter = 0
         self.drawing = PKDrawing()
@@ -152,7 +209,17 @@ class CustomCanvasView: PKCanvasView {
     
     @objc func buttonTapped4() {
         print("Button was tapped")
-        products.append(":")
+        products2.append(":")
+        self.updateProductsLabel()
+        deleteLocalData()
+        strokeCounter = 0
+        self.drawing = PKDrawing()
+    }
+    
+    @objc func buttonTapped5() {
+        print("Button was tapped")
+        products2.append(" ")
+        self.updateProductsLabel()
         deleteLocalData()
         strokeCounter = 0
         self.drawing = PKDrawing()
@@ -162,6 +229,7 @@ class CustomCanvasView: PKCanvasView {
         super.touchesBegan(touches, with: event)
         startTime = 0
         deleteLocalData()
+        timer?.invalidate()
         if let touch = touches.first {
             let location = touch.location(in: self)
             let timestamp = touch.timestamp
@@ -209,66 +277,7 @@ class CustomCanvasView: PKCanvasView {
             localXCoordinates.append(Float(location.x))
             localYCoordinates.append(Float(location.y))
             gcd()
-            // Check for space
-//            if abs(end_y_coordinate - location.y) > 100 {
-//                if end_x_coordinate != 0.0 {
-//                    if products.count > 0 {
-//                        let last = products.last!
-//                        products.removeLast()
-//                        products.append(last + " ")
-//                    }
-//                }
-//            }
-
-            // Perform predictions asynchronously
-//            if strokeCounter == 1 {
-//                    let rlt = self.performPrediction1stroke(pre_x: self.localXCoordinates, pre_y: self.localYCoordinates, pre_time: self.localTimeStamps)
-//                        if (rlt != nil) {
-//                            self.deleteLocalData()
-//                            self.strokeCounter = 0
-//                            //self.drawing = PKDrawing()
-//
-//                            // Check if the touch is within any button's frame
-//                            if let button1 = self.firstButton, button1.frame.contains(location) {
-//                                return
-//                            }
-//                            if let button2 = self.secondButton, button2.frame.contains(location) {
-//                                return
-//                            }
-//                            
-//                            products.append(rlt!)
-//                            end_x_coordinate = location.x
-//                            end_y_coordinate = location.y
-//                            showButton(at: location)
-//                        }
-//                    
-//                
-//                
-//            }
-//
-//            if strokeCounter == 2 {
-//                self.strokeCounter = 0
-//                let rlt = self.performPrediction(pre_x: self.localXCoordinates, pre_y: self.localYCoordinates, pre_time: self.localTimeStamps)
-//         
-//                    self.deleteLocalData()
-//                    // Check if the touch is within any button's frame
-//                    if let button1 = self.firstButton, button1.frame.contains(location) {
-//                        return
-//                    }
-//                    if let button2 = self.secondButton, button2.frame.contains(location) {
-//                        return
-//                    }
-//                
-//                if (rlt != nil){
-//                    products.append(rlt!)
-//                    end_x_coordinate = location.x
-//                    end_y_coordinate = location.y
-//                    showButton(at: location)
-//                }
-//                    
-//                
-//            }
-
+            showButton(at: location)
             
         }
     }
@@ -330,13 +339,11 @@ class CustomCanvasView: PKCanvasView {
                 
                 
             }
-            print("product2", self.products2)
-
-//NG            DispatchQueue.main.async {
-//                print("This is run on the main thread")
-//                self.products = self.products2
-//                
-//            }
+            DispatchQueue.main.async {
+                print("product2", self.products2)
+                //self.startTimer()
+                self.updateProductsLabel()
+            }
         }
     }
 

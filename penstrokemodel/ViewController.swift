@@ -33,23 +33,23 @@ class ViewController: BaseController, PKCanvasViewDelegate,PKToolPickerObserver 
         toolPicker.addObserver(self)
         canvasView.becomeFirstResponder()
         
-        // Set up the label
-        productsLabel = UILabel()
-        productsLabel.translatesAutoresizingMaskIntoConstraints = false
-        productsLabel.numberOfLines = 0
-        productsLabel.textAlignment = .center
-        productsLabel.font = UIFont.systemFont(ofSize: 32)
-        productsLabel.textColor = .black
-        productsLabel.backgroundColor = .clear
-
-        self.view.addSubview(productsLabel)
-
-        // Set up constraints
-        NSLayoutConstraint.activate([
-            productsLabel.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 20),
-            productsLabel.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 20),
-            productsLabel.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -20)
-        ])
+//        // Set up the label
+//        productsLabel = UILabel()
+//        productsLabel.translatesAutoresizingMaskIntoConstraints = false
+//        productsLabel.numberOfLines = 0
+//        productsLabel.textAlignment = .center
+//        productsLabel.font = UIFont.systemFont(ofSize: 32)
+//        productsLabel.textColor = .black
+//        productsLabel.backgroundColor = .clear
+//
+//        self.view.addSubview(productsLabel)
+//
+//        // Set up constraints
+//        NSLayoutConstraint.activate([
+//            productsLabel.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 20),
+//            productsLabel.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 20),
+//            productsLabel.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -20)
+//        ])
         
         //startTimer()
     }
