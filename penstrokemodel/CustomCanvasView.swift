@@ -271,38 +271,43 @@ class CustomCanvasView: PKCanvasView {
         }
     }
     
+    func addToManager() -> [DataEntry]{
+        DataManagerRepository.shared.addDataManager(self.copyDataManager() as! SharedDataManager)
+        let aggregatedData = DataManagerRepository.shared.sumAllData()
+        // Print aggregated data
+        print("Data Count: \(aggregatedData.count)")
+        return aggregatedData
+    }
+    
     func gcd(){
         DispatchQueue.global(qos: .background).async {
             print("This is run on a background thread")
             self.dataManager.timeStamps = self.localTimeStamps
             self.dataManager.x_coordinates = self.localXCoordinates
             self.dataManager.y_coordinates = self.localYCoordinates
-            //self.addToManager()
+            let dataRepo = self.addToManager()
             
             var rlt:String?
-            if self.strokeCounter == 1 {
+            if dataRepo.count == 1 {
                 // Perform predictions asynchronously
-                rlt = self.performPrediction1stroke(pre_x: self.dataManager.x_coordinates, pre_y: self.dataManager.y_coordinates, pre_time: self.dataManager.timeStamps)
-                if rlt == nil{
-                    self.strokeCounter = 0
-                    self.deleteData()
+                rlt = self.performPrediction1stroke(pre_x: dataRepo.first!.xCoordinates, pre_y:dataRepo.first!.yCoordinates , pre_time: dataRepo.first!.timeStamps)
+                if rlt != nil{
+                    DataManagerRepository.shared.removeAllDataManager()
                 }
             }
                 
-            if self.strokeCounter == 2 {
-                self.strokeCounter = 0
-                
-                rlt = self.performPrediction(pre_x: self.dataManager.x_coordinates, pre_y: self.dataManager.y_coordinates, pre_time: self.dataManager.timeStamps)
-                self.deleteData()
+            if dataRepo.count == 2 {
+                rlt = self.performPrediction(pre_x: dataRepo[1].xCoordinates, pre_y: dataRepo[1].yCoordinates, pre_time: dataRepo[1].timeStamps)
+                DataManagerRepository.shared.removeAllDataManager()
  
             }
 
-            DispatchQueue.main.async {
-                print("This is run on the main thread")
-                if (rlt != nil) {
-                    self.products.append(rlt!)
-                }
-            }
+//            DispatchQueue.main.async {
+//                print("This is run on the main thread")
+//                if (rlt != nil) {
+//                    self.products.append(rlt!)
+//                }
+//            }
         }
     }
 
