@@ -288,7 +288,8 @@ class CustomCanvasView: PKCanvasView {
             self.dataManager.x_coordinates = self.localXCoordinates
             self.dataManager.y_coordinates = self.localYCoordinates
             let dataRepo = self.addToManager()
-            
+            var rlt0:String?
+            var v0:Float?
             var rlt:String?
             var v:Float?
             var rlt2:String?
@@ -297,22 +298,34 @@ class CustomCanvasView: PKCanvasView {
                 // Perform predictions asynchronously
                 (rlt,v) = self.performPrediction1stroke(pre_x: dataRepo.last!.xCoordinates, pre_y:dataRepo.last!.yCoordinates , pre_time: dataRepo.last!.timeStamps)
                 if rlt != nil{
-                    self.products2.append(rlt!)
+                    if rlt != "sla" && rlt != "vl" && rlt != "j" && rlt != "hl" && rlt != "bksla" && rlt != "vl3" && rlt != "opb" {
+                        self.products2.append(rlt!)
+                    }
                     //DataManagerRepository.shared.removeAllDataManager()
                 }
             }
             
             if dataRepo.count > 1 {
                 // Perform predictions asynchronously
+                (rlt0,v0) = self.performPrediction1stroke(pre_x: dataRepo[dataRepo.count-2].xCoordinates, pre_y:dataRepo[dataRepo.count-2].yCoordinates , pre_time: dataRepo[dataRepo.count-2].timeStamps)
+                
                 (rlt,v) = self.performPrediction1stroke(pre_x: dataRepo.last!.xCoordinates, pre_y:dataRepo.last!.yCoordinates , pre_time: dataRepo.last!.timeStamps)
                 
-                (rlt2,v2) = self.performPrediction(pre_x: dataRepo[dataRepo.count-2].xCoordinates + dataRepo.last!.xCoordinates, pre_y:dataRepo[dataRepo.count-2].yCoordinates + dataRepo.last!.yCoordinates , pre_time: dataRepo[dataRepo.count-2].timeStamps + dataRepo.last!.timeStamps)
+                if rlt0 == "sla" || rlt0 == "vl" || rlt0 == "j" || rlt0 == "hl" || rlt0 == "bksla" || rlt0 == "vl3" || rlt0 == "opb"{
+                    (rlt2,v2) = self.performPrediction(pre_x: dataRepo[dataRepo.count-2].xCoordinates + dataRepo.last!.xCoordinates, pre_y:dataRepo[dataRepo.count-2].yCoordinates + dataRepo.last!.yCoordinates , pre_time: dataRepo[dataRepo.count-2].timeStamps + dataRepo.last!.timeStamps)
+                }
+                
                 if v2 ?? 0 > v ?? 0{
                     self.products2.append(rlt2!)
                 }
                 
                 if v2 ?? 0 < v ?? 0{
-                    self.products2.append(rlt!)
+                    if rlt != "sla" && rlt != "vl" && rlt != "j" && rlt != "hl" && rlt != "bksla" && rlt != "vl3"{
+                        if rlt == "opb"{
+                            rlt = "k"
+                        }
+                        self.products2.append(rlt!)
+                    }
                 }
                 
                 
@@ -395,7 +408,7 @@ class CustomCanvasView: PKCanvasView {
     
     func performPrediction1stroke(pre_x: [Float], pre_y: [Float], pre_time: [Float]) -> (String?,Float?) {
         if let (label,value) = modelHandler_1stroke.performPrediction1stroke(pre_x: pre_x, pre_y: pre_y, pre_time: pre_time, maxLength: 77) {
-            if value > 0.87 && label != "hl" && label != "bksla" && label != "vl3" && label != "vl" && label != "opb" && label != "sla"{
+            if value > 0.87 {
                 
                 print("Predicted label: \(label)")
                 print("Predicted value: \(value)")
