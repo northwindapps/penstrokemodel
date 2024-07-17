@@ -8,6 +8,7 @@ class ViewController: BaseController, PKCanvasViewDelegate,PKToolPickerObserver 
     var toolPicker: PKToolPicker!
     var interpreter: Interpreter?
     var productsLabel: UILabel!
+    var timer: Timer?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -50,7 +51,7 @@ class ViewController: BaseController, PKCanvasViewDelegate,PKToolPickerObserver 
             productsLabel.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -20)
         ])
         
-        
+        //startTimer()
     }
     
     func configureCanvas() {
@@ -64,8 +65,18 @@ class ViewController: BaseController, PKCanvasViewDelegate,PKToolPickerObserver 
         
     }
     
+    func startTimer() {
+        timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(timerFired), userInfo: nil, repeats: true)
+    }
+
+    @objc func timerFired() {
+        DispatchQueue.main.async {
+            self.updateProductsLabel()
+        }
+    }
+    
     func updateProductsLabel() {
-        let joinedString = canvasView.products.joined(separator: "")
+        let joinedString = canvasView.products2.joined(separator: "")
 
         var modifiedString = joinedString.replacingOccurrences(of: ".", with: ".\n")
         modifiedString = modifiedString.replacingOccurrences(of: "?", with: "?\n")

@@ -17,6 +17,7 @@ class CustomCanvasView: PKCanvasView {
     private var prediction_history:[Float] = []
     var modelHandler: StrokeModelHandler!
     var modelHandler_1stroke: StrokeModelHandler!
+    var products2: [String]
     var products: [String] {
         didSet {
             //print("Products changed to: \(products)")
@@ -47,6 +48,7 @@ class CustomCanvasView: PKCanvasView {
         self.dataManager = dataManager
         self.annotation = annotation
         self.products = products
+        self.products2 = products
        
         
         // Initialize model handler
@@ -288,25 +290,39 @@ class CustomCanvasView: PKCanvasView {
             let dataRepo = self.addToManager()
             
             var rlt:String?
+            var v:Float?
+            var rlt2:String?
+            var v2:Float?
             if dataRepo.count == 1 {
                 // Perform predictions asynchronously
-                rlt = self.performPrediction1stroke(pre_x: dataRepo.first!.xCoordinates, pre_y:dataRepo.first!.yCoordinates , pre_time: dataRepo.first!.timeStamps)
+                (rlt,v) = self.performPrediction1stroke(pre_x: dataRepo.last!.xCoordinates, pre_y:dataRepo.last!.yCoordinates , pre_time: dataRepo.last!.timeStamps)
                 if rlt != nil{
-                    DataManagerRepository.shared.removeAllDataManager()
+                    self.products2.append(rlt!)
+                    //DataManagerRepository.shared.removeAllDataManager()
                 }
             }
+            
+            if dataRepo.count > 1 {
+                // Perform predictions asynchronously
+                (rlt,v) = self.performPrediction1stroke(pre_x: dataRepo.last!.xCoordinates, pre_y:dataRepo.last!.yCoordinates , pre_time: dataRepo.last!.timeStamps)
                 
-            if dataRepo.count == 2 {
-                rlt = self.performPrediction(pre_x: dataRepo[1].xCoordinates, pre_y: dataRepo[1].yCoordinates, pre_time: dataRepo[1].timeStamps)
-                DataManagerRepository.shared.removeAllDataManager()
- 
+                (rlt2,v2) = self.performPrediction(pre_x: dataRepo[dataRepo.count-2].xCoordinates + dataRepo.last!.xCoordinates, pre_y:dataRepo[dataRepo.count-2].yCoordinates + dataRepo.last!.yCoordinates , pre_time: dataRepo[dataRepo.count-2].timeStamps + dataRepo.last!.timeStamps)
+                if v2 ?? 0 > v ?? 0{
+                    self.products2.append(rlt2!)
+                }
+                
+                if v2 ?? 0 < v ?? 0{
+                    self.products2.append(rlt!)
+                }
+                
+                
             }
+            print("product2", self.products2)
 
-//            DispatchQueue.main.async {
+//NG            DispatchQueue.main.async {
 //                print("This is run on the main thread")
-//                if (rlt != nil) {
-//                    self.products.append(rlt!)
-//                }
+//                self.products = self.products2
+//                
 //            }
         }
     }
@@ -358,12 +374,12 @@ class CustomCanvasView: PKCanvasView {
     
     
     
-    func performPrediction(pre_x: [Float], pre_y: [Float], pre_time: [Float]) -> String? {
+    func performPrediction(pre_x: [Float], pre_y: [Float], pre_time: [Float]) -> (String?,Float?) {
         if let (label,value) = modelHandler.performPrediction2(pre_x: pre_x, pre_y: pre_y, pre_time: pre_time, maxLength: 57) {
             if value > 0.87{
                 print("Predicted label: \(label)")
                 print("Predicted value: \(value)")
-                return label
+                return (label,value)
                 
             }
             if value <= 0.87{
@@ -373,18 +389,17 @@ class CustomCanvasView: PKCanvasView {
             }
         }else {
             print("Prediction failed")
-            deleteLocalData()
         }
-        return nil
+        return (nil,nil)
     }
     
-    func performPrediction1stroke(pre_x: [Float], pre_y: [Float], pre_time: [Float]) -> String? {
+    func performPrediction1stroke(pre_x: [Float], pre_y: [Float], pre_time: [Float]) -> (String?,Float?) {
         if let (label,value) = modelHandler_1stroke.performPrediction1stroke(pre_x: pre_x, pre_y: pre_y, pre_time: pre_time, maxLength: 77) {
             if value > 0.87 && label != "hl" && label != "bksla" && label != "vl3" && label != "vl" && label != "opb" && label != "sla"{
                 
                 print("Predicted label: \(label)")
                 print("Predicted value: \(value)")
-                return label
+                return (label,value)
             }
             if value <= 0.87{
                 //y,i,j,x.. two-stroke group
@@ -395,6 +410,6 @@ class CustomCanvasView: PKCanvasView {
             print("Prediction failed")
             //DataManagerRepository.shared.removeAllDataManager()
         }
-        return nil
+        return (nil,nil)
     }
 }
