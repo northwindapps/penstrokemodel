@@ -18,6 +18,7 @@ class CustomCanvasView: PKCanvasView {
     var modelHandler: StrokeModelHandler!
     var modelHandler_1stroke: StrokeModelHandler!
     var modelHandler_19: StrokeModelHandler!
+    var dnaProducts: [String]
     var products2: [String]
     var products: [String] {
         didSet {
@@ -62,6 +63,7 @@ class CustomCanvasView: PKCanvasView {
         self.annotation = annotation
         self.products = products
         self.products2 = products
+        self.dnaProducts = products
        
         
         // Initialize model handler
@@ -301,7 +303,7 @@ class CustomCanvasView: PKCanvasView {
             let dataRepo = self.addToManager()
             var rlt0:String?
             var v0:Float?
-            var rlt:String?
+            var rlt1:String?
             var v:Float?
             var rlt2:String?
             var v2:Float?
@@ -310,13 +312,15 @@ class CustomCanvasView: PKCanvasView {
             if dataRepo.count == 1 {
                 // Perform predictions asynchronously
                 if dataRepo.last?.xCoordinates.count ?? 0 < 20{
-                    (rlt,v) = self.performPrediction19(pre_x: dataRepo.last!.xCoordinates, pre_y:dataRepo.last!.yCoordinates , pre_time: dataRepo.last!.timeStamps)
+                    (rlt1,v) = self.performPrediction19(pre_x: dataRepo.last!.xCoordinates, pre_y:dataRepo.last!.yCoordinates , pre_time: dataRepo.last!.timeStamps)
                 }else{
-                    (rlt,v) = self.performPrediction1stroke(pre_x: dataRepo.last!.xCoordinates, pre_y:dataRepo.last!.yCoordinates , pre_time: dataRepo.last!.timeStamps)
+                    (rlt1,v) = self.performPrediction1stroke(pre_x: dataRepo.last!.xCoordinates, pre_y:dataRepo.last!.yCoordinates , pre_time: dataRepo.last!.timeStamps)
                 }
-                if rlt != nil{
-                    if rlt != "sla" && rlt != "vl" && rlt != "j" && rlt != "hl" && rlt != "bksla" && rlt != "vl3" && rlt != "opb" {
-                        self.products2.append(rlt!)
+                if rlt1 != nil{
+                    //store all outputs on dna
+                    self.dnaProducts.append(rlt1!)
+                    if rlt1 != "sla" && rlt1 != "vl" && rlt1 != "j" && rlt1 != "hl" && rlt1 != "bksla" && rlt1 != "vl3" && rlt1 != "opb" && rlt1 != "hlbksla" && rlt1 != "vlsla"  {
+                        self.products2.append(rlt1!)
                     }
                     //j requires 2 strokes
                     //DataManagerRepository.shared.removeAllDataManager()
@@ -324,49 +328,57 @@ class CustomCanvasView: PKCanvasView {
             }
             
             if dataRepo.count > 1 {
-                // Perform predictions asynchronously
                 
+                print("dataRepo[dataRepo.count-2].count",dataRepo[dataRepo.count-2].xCoordinates.count)
+                // Perform predictions asynchronously
+//                if dataRepo[dataRepo.count-2].xCoordinates.count < 20{
+//                    (rlt0,v0) = self.performPrediction19(pre_x: dataRepo[dataRepo.count-2].xCoordinates, pre_y:dataRepo[dataRepo.count-2].yCoordinates , pre_time: dataRepo[dataRepo.count-2].timeStamps)
+//                    
+//                }
+//                
+//                if dataRepo[dataRepo.count-2].xCoordinates.count >= 20{
+//                    (rlt0,v0) = self.performPrediction1stroke(pre_x: dataRepo[dataRepo.count-2].xCoordinates, pre_y:dataRepo[dataRepo.count-2].yCoordinates , pre_time: dataRepo[dataRepo.count-2].timeStamps)
+//                }
+                
+                print("dataRepo.last?.count",dataRepo.last?.xCoordinates.count)
                 
                 if dataRepo.last?.xCoordinates.count ?? 0 < 20{
-                    (rlt0,v0) = self.performPrediction19(pre_x: dataRepo[dataRepo.count-2].xCoordinates, pre_y:dataRepo[dataRepo.count-2].yCoordinates , pre_time: dataRepo[dataRepo.count-2].timeStamps)
-                    (rlt,v) = self.performPrediction19(pre_x: dataRepo.last!.xCoordinates, pre_y:dataRepo.last!.yCoordinates , pre_time: dataRepo.last!.timeStamps)
-                }else{
-                    (rlt0,v0) = self.performPrediction1stroke(pre_x: dataRepo[dataRepo.count-2].xCoordinates, pre_y:dataRepo[dataRepo.count-2].yCoordinates , pre_time: dataRepo[dataRepo.count-2].timeStamps)
-                    (rlt,v) = self.performPrediction1stroke(pre_x: dataRepo.last!.xCoordinates, pre_y:dataRepo.last!.yCoordinates , pre_time: dataRepo.last!.timeStamps)
+                    (rlt1,v) = self.performPrediction19(pre_x: dataRepo.last!.xCoordinates, pre_y:dataRepo.last!.yCoordinates , pre_time: dataRepo.last!.timeStamps)
                 }
                 
-                if rlt0 == "hlbksla" || rlt0 == "vlsla" || rlt0 == "j" {
+                if dataRepo.last?.xCoordinates.count ?? 0 >= 20{
+                    (rlt1,v) = self.performPrediction1stroke(pre_x: dataRepo.last!.xCoordinates, pre_y:dataRepo.last!.yCoordinates , pre_time: dataRepo.last!.timeStamps)
+                }
+                
+                
+                
+                if self.dnaProducts.last == "hlbksla" || self.dnaProducts.last == "vlsla" || self.dnaProducts.last == "j" {
                     (rlt2,v2) = self.performPrediction(pre_x: dataRepo[dataRepo.count-2].xCoordinates + dataRepo.last!.xCoordinates, pre_y:dataRepo[dataRepo.count-2].yCoordinates + dataRepo.last!.yCoordinates , pre_time: dataRepo[dataRepo.count-2].timeStamps + dataRepo.last!.timeStamps)
+                    
+                    if (rlt2 != nil) {
+                        if rlt2 != "hlbksla" && rlt2 != "vlsla"{
+                            self.products2.append(rlt2!)
+                        }
+                        self.dnaProducts.append(rlt2!)
+                    }
                 }
                 
                 
                 
-                if v2 ?? 0 < v ?? 0{
-                    if rlt != "sla" && rlt != "vl" && rlt != "j" && rlt != "hl" && rlt != "bksla" && rlt != "vl3"{
-                        if rlt == "opb"{
-                            rlt = "k"
-                        }
-                        if rlt == "vl3"{
-                            rlt = "f"
-                        }
-                        self.products2.append(rlt!)
-                    }
-                }
                 
-                if v2 ?? 0 > v ?? 0{
-                    if rlt2 == "opb"{
-                        rlt2 = "k"
+                
+                if (rlt2 == nil && rlt1 != nil){
+                    if rlt1 != "hlbksla" && rlt1 != "vlsla"{
+                        self.products2.append(rlt1!)
                     }
-                    if rlt2 == "vl3"{
-                        rlt2 = "f"
-                    }
-                    self.products2.append(rlt2!)
+                    self.dnaProducts.append(rlt1!)
                 }
                 
                 
             }
             DispatchQueue.main.async {
                 print("product2", self.products2)
+                print("dna",self.dnaProducts)
                 //self.startTimer()
                 self.updateProductsLabel()
             }
@@ -422,18 +434,18 @@ class CustomCanvasView: PKCanvasView {
     func performPrediction(pre_x: [Float], pre_y: [Float], pre_time: [Float]) -> (String?,Float?) {
         if let (label,value) = modelHandler.performPrediction2(pre_x: pre_x, pre_y: pre_y, pre_time: pre_time, maxLength: 57) {
             if value > 0.87{
-                print("Predicted label: \(label)")
-                print("Predicted value: \(value)")
+                print("Predicted label2: \(label)")
+                print("Predicted value2: \(value)")
                 return (label,value)
                 
             }
             if value <= 0.87{
                 //y,i,j,x.. two-stroke group
-                print("NG Predicted label: \(label)")
-                print("NG Predicted value: \(value)")
+                print("NG Predicted label2: \(label)")
+                print("NG Predicted value2: \(value)")
             }
         }else {
-            print("Prediction failed")
+            print("Prediction2 failed")
         }
         return (nil,nil)
     }
@@ -442,17 +454,17 @@ class CustomCanvasView: PKCanvasView {
         if let (label,value) = modelHandler_1stroke.performPrediction1stroke(pre_x: pre_x, pre_y: pre_y, pre_time: pre_time, maxLength: 77) {
             if value > 0.87 {
                 
-                print("Predicted label: \(label)")
-                print("Predicted value: \(value)")
+                print("Predicted label1: \(label)")
+                print("Predicted value1: \(value)")
                 return (label,value)
             }
             if value <= 0.87{
                 //y,i,j,x.. two-stroke group
-                print("NG Predicted label: \(label)")
-                print("NG Predicted value: \(value)")
+                print("NG Predicted label1: \(label)")
+                print("NG Predicted value1: \(value)")
             }
         }else {
-            print("Prediction failed")
+            print("Prediction1 failed")
             //DataManagerRepository.shared.removeAllDataManager()
         }
         return (nil,nil)
