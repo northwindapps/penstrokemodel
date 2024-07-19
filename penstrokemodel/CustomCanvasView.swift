@@ -17,6 +17,7 @@ class CustomCanvasView: PKCanvasView {
     private var prediction_history:[Float] = []
     var modelHandler: StrokeModelHandler!
     var modelHandler_1stroke: StrokeModelHandler!
+    var modelHandler_19: StrokeModelHandler!
     var products2: [String]
     var products: [String] {
         didSet {
@@ -47,7 +48,7 @@ class CustomCanvasView: PKCanvasView {
     private let label: UILabel = {
         let label = UILabel()
         label.text = "Your Text Here"
-        label.font = UIFont.systemFont(ofSize: 20)
+        label.font = UIFont.systemFont(ofSize: 25)
         label.textColor = .black
         label.numberOfLines = 20
         label.textAlignment = .center
@@ -66,6 +67,7 @@ class CustomCanvasView: PKCanvasView {
         // Initialize model handler
         modelHandler = StrokeModelHandler(modelName: "pen_stroke_model2strokes")
         modelHandler_1stroke = StrokeModelHandler(modelName: "pen_stroke_model1stroke")
+        modelHandler_19 = StrokeModelHandler(modelName: "pen_stroke_model19")
         super.init(frame: .zero)
         
         // Add label to the superview
@@ -303,38 +305,62 @@ class CustomCanvasView: PKCanvasView {
             var v:Float?
             var rlt2:String?
             var v2:Float?
+            
+            print("xcount",dataRepo.last?.xCoordinates.count)
             if dataRepo.count == 1 {
                 // Perform predictions asynchronously
-                (rlt,v) = self.performPrediction1stroke(pre_x: dataRepo.last!.xCoordinates, pre_y:dataRepo.last!.yCoordinates , pre_time: dataRepo.last!.timeStamps)
+                if dataRepo.last?.xCoordinates.count ?? 0 < 20{
+                    (rlt,v) = self.performPrediction19(pre_x: dataRepo.last!.xCoordinates, pre_y:dataRepo.last!.yCoordinates , pre_time: dataRepo.last!.timeStamps)
+                }else{
+                    (rlt,v) = self.performPrediction1stroke(pre_x: dataRepo.last!.xCoordinates, pre_y:dataRepo.last!.yCoordinates , pre_time: dataRepo.last!.timeStamps)
+                }
                 if rlt != nil{
                     if rlt != "sla" && rlt != "vl" && rlt != "j" && rlt != "hl" && rlt != "bksla" && rlt != "vl3" && rlt != "opb" {
                         self.products2.append(rlt!)
                     }
+                    //j requires 2 strokes
                     //DataManagerRepository.shared.removeAllDataManager()
                 }
             }
             
             if dataRepo.count > 1 {
                 // Perform predictions asynchronously
-                (rlt0,v0) = self.performPrediction1stroke(pre_x: dataRepo[dataRepo.count-2].xCoordinates, pre_y:dataRepo[dataRepo.count-2].yCoordinates , pre_time: dataRepo[dataRepo.count-2].timeStamps)
                 
-                (rlt,v) = self.performPrediction1stroke(pre_x: dataRepo.last!.xCoordinates, pre_y:dataRepo.last!.yCoordinates , pre_time: dataRepo.last!.timeStamps)
+                
+                if dataRepo.last?.xCoordinates.count ?? 0 < 20{
+                    (rlt0,v0) = self.performPrediction19(pre_x: dataRepo[dataRepo.count-2].xCoordinates, pre_y:dataRepo[dataRepo.count-2].yCoordinates , pre_time: dataRepo[dataRepo.count-2].timeStamps)
+                    (rlt,v) = self.performPrediction19(pre_x: dataRepo.last!.xCoordinates, pre_y:dataRepo.last!.yCoordinates , pre_time: dataRepo.last!.timeStamps)
+                }else{
+                    (rlt0,v0) = self.performPrediction1stroke(pre_x: dataRepo[dataRepo.count-2].xCoordinates, pre_y:dataRepo[dataRepo.count-2].yCoordinates , pre_time: dataRepo[dataRepo.count-2].timeStamps)
+                    (rlt,v) = self.performPrediction1stroke(pre_x: dataRepo.last!.xCoordinates, pre_y:dataRepo.last!.yCoordinates , pre_time: dataRepo.last!.timeStamps)
+                }
                 
                 if rlt0 == "sla" || rlt0 == "vl" || rlt0 == "j" || rlt0 == "hl" || rlt0 == "bksla" || rlt0 == "vl3" || rlt0 == "opb"{
                     (rlt2,v2) = self.performPrediction(pre_x: dataRepo[dataRepo.count-2].xCoordinates + dataRepo.last!.xCoordinates, pre_y:dataRepo[dataRepo.count-2].yCoordinates + dataRepo.last!.yCoordinates , pre_time: dataRepo[dataRepo.count-2].timeStamps + dataRepo.last!.timeStamps)
                 }
                 
-                if v2 ?? 0 > v ?? 0{
-                    self.products2.append(rlt2!)
-                }
+                
                 
                 if v2 ?? 0 < v ?? 0{
                     if rlt != "sla" && rlt != "vl" && rlt != "j" && rlt != "hl" && rlt != "bksla" && rlt != "vl3"{
                         if rlt == "opb"{
                             rlt = "k"
                         }
+                        if rlt == "vl3"{
+                            rlt = "f"
+                        }
                         self.products2.append(rlt!)
                     }
+                }
+                
+                if v2 ?? 0 > v ?? 0{
+                    if rlt2 == "opb"{
+                        rlt2 = "k"
+                    }
+                    if rlt2 == "vl3"{
+                        rlt2 = "f"
+                    }
+                    self.products2.append(rlt2!)
                 }
                 
                 
@@ -346,8 +372,7 @@ class CustomCanvasView: PKCanvasView {
             }
         }
     }
-
-
+    
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesCancelled(touches, with: event)
         if let touch = touches.first {
@@ -415,6 +440,26 @@ class CustomCanvasView: PKCanvasView {
     
     func performPrediction1stroke(pre_x: [Float], pre_y: [Float], pre_time: [Float]) -> (String?,Float?) {
         if let (label,value) = modelHandler_1stroke.performPrediction1stroke(pre_x: pre_x, pre_y: pre_y, pre_time: pre_time, maxLength: 77) {
+            if value > 0.87 {
+                
+                print("Predicted label: \(label)")
+                print("Predicted value: \(value)")
+                return (label,value)
+            }
+            if value <= 0.87{
+                //y,i,j,x.. two-stroke group
+                print("NG Predicted label: \(label)")
+                print("NG Predicted value: \(value)")
+            }
+        }else {
+            print("Prediction failed")
+            //DataManagerRepository.shared.removeAllDataManager()
+        }
+        return (nil,nil)
+    }
+    
+    func performPrediction19(pre_x: [Float], pre_y: [Float], pre_time: [Float]) -> (String?,Float?) {
+        if let (label,value) = modelHandler_19.performPrediction19(pre_x: pre_x, pre_y: pre_y, pre_time: pre_time, maxLength: 19) {
             if value > 0.87 {
                 
                 print("Predicted label: \(label)")
