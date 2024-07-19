@@ -30,8 +30,6 @@ class CustomCanvasView: PKCanvasView {
     }
     private var timer: Timer?
     private var prediction_timer: Timer?
-    private var end_x_coordinate: CGFloat = 0.0
-    private var end_y_coordinate: CGFloat = 0.0
     private var firstButton: UIButton?
     private var secondButton: UIButton?
     private var thirdButton: UIButton?
@@ -40,10 +38,9 @@ class CustomCanvasView: PKCanvasView {
     private var localTimeStamps: [Float] = []
     private var localXCoordinates: [Float] = []
     private var localYCoordinates: [Float] = []
-    //for seconds stroke data
-    private var bk_localTimeStamps: [Float] = []
-    private var bk_localXCoordinates: [Float] = []
-    private var bk_localYCoordinates: [Float] = []
+    private var x_lenght_last: CGFloat = 0.0
+    private var y_length_last: CGFloat = 0.0
+  
     
     // Define the UILabel
     private let label: UILabel = {
@@ -330,15 +327,7 @@ class CustomCanvasView: PKCanvasView {
             if dataRepo.count > 1 {
                 
                 print("dataRepo[dataRepo.count-2].count",dataRepo[dataRepo.count-2].xCoordinates.count)
-                // Perform predictions asynchronously
-//                if dataRepo[dataRepo.count-2].xCoordinates.count < 20{
-//                    (rlt0,v0) = self.performPrediction19(pre_x: dataRepo[dataRepo.count-2].xCoordinates, pre_y:dataRepo[dataRepo.count-2].yCoordinates , pre_time: dataRepo[dataRepo.count-2].timeStamps)
-//                    
-//                }
-//                
-//                if dataRepo[dataRepo.count-2].xCoordinates.count >= 20{
-//                    (rlt0,v0) = self.performPrediction1stroke(pre_x: dataRepo[dataRepo.count-2].xCoordinates, pre_y:dataRepo[dataRepo.count-2].yCoordinates , pre_time: dataRepo[dataRepo.count-2].timeStamps)
-//                }
+             
                 
                 print("dataRepo.last?.count",dataRepo.last?.xCoordinates.count)
                 
@@ -352,10 +341,27 @@ class CustomCanvasView: PKCanvasView {
                 
                 
                 
+                
+                
                 if self.dnaProducts.last == "hlbksla" || self.dnaProducts.last == "vlsla" {
                     (rlt2,v2) = self.performPrediction(pre_x: dataRepo[dataRepo.count-2].xCoordinates + dataRepo.last!.xCoordinates, pre_y:dataRepo[dataRepo.count-2].yCoordinates + dataRepo.last!.yCoordinates , pre_time: dataRepo[dataRepo.count-2].timeStamps + dataRepo.last!.timeStamps)
                     
                     if (rlt2 != nil) {
+                        if self.dnaProducts.last == "hlbksla" && rlt1 == "vlsla"{
+                            let distances1 = self.calculateDistances(xCoordinates: dataRepo[dataRepo.count-2].xCoordinates, yCoordinates: dataRepo[dataRepo.count-2].yCoordinates)
+                            let sum1 = self.sumDistances(distances: distances1)
+                            
+                            let distances2 = self.calculateDistances(xCoordinates: dataRepo.last!.xCoordinates, yCoordinates: dataRepo.last!.yCoordinates)
+                            let sum2 = self.sumDistances(distances: distances2)
+                            
+                            if sum1/sum2 > 1.3 || sum2/sum1 > 1.3{
+                                rlt2 = "y"
+                            }else{
+                                rlt2 = "x"
+                            }
+                            
+                        }
+                           
                         if rlt2 != "hlbksla" && rlt2 != "vlsla"{
                             self.products2.append(rlt2!)
                         }
@@ -383,6 +389,24 @@ class CustomCanvasView: PKCanvasView {
                 self.updateProductsLabel()
             }
         }
+    }
+    
+    func sumDistances(distances: [Float]) -> Float {
+        return distances.reduce(0, +)
+    }
+    
+    func calculateDistances(xCoordinates: [Float], yCoordinates: [Float]) -> [Float] {
+        var distances: [Float] = []
+        
+        let count = min(xCoordinates.count, yCoordinates.count)
+        for i in 1..<count {
+            let xDistance = xCoordinates[i] - xCoordinates[i - 1]
+            let yDistance = yCoordinates[i] - yCoordinates[i - 1]
+            let distance = sqrt(xDistance * xDistance + yDistance * yDistance)
+            distances.append(distance)
+        }
+        
+        return distances
     }
     
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
