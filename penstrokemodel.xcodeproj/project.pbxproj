@@ -34,12 +34,12 @@
 		2BCA1ADB2C43CD0800160B51 /* old_pen_stroke_model2strokes.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 2BCA1ADA2C43CD0800160B51 /* old_pen_stroke_model2strokes.tflite */; };
 		2BCA1ADC2C43CD0800160B51 /* old_pen_stroke_model2strokes.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 2BCA1ADA2C43CD0800160B51 /* old_pen_stroke_model2strokes.tflite */; };
 		2BCA1ADD2C43CD0800160B51 /* old_pen_stroke_model2strokes.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 2BCA1ADA2C43CD0800160B51 /* old_pen_stroke_model2strokes.tflite */; };
-		2BE3EAAF2C4A7B3B00958CD0 /* pen_stroke_model19.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 2BE3EAAE2C4A7B3A00958CD0 /* pen_stroke_model19.tflite */; };
-		2BE3EAB02C4A7B3B00958CD0 /* pen_stroke_model19.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 2BE3EAAE2C4A7B3A00958CD0 /* pen_stroke_model19.tflite */; };
-		2BE3EAB12C4A7B3B00958CD0 /* pen_stroke_model19.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 2BE3EAAE2C4A7B3A00958CD0 /* pen_stroke_model19.tflite */; };
 		2BE3EAB32C4A7C5B00958CD0 /* pen_stroke_data_07-19-2024-u20_csv.json in Resources */ = {isa = PBXBuildFile; fileRef = 2BE3EAB22C4A7C5B00958CD0 /* pen_stroke_data_07-19-2024-u20_csv.json */; };
 		2BE3EAB42C4A7C5B00958CD0 /* pen_stroke_data_07-19-2024-u20_csv.json in Resources */ = {isa = PBXBuildFile; fileRef = 2BE3EAB22C4A7C5B00958CD0 /* pen_stroke_data_07-19-2024-u20_csv.json */; };
 		2BE3EAB52C4A7C5B00958CD0 /* pen_stroke_data_07-19-2024-u20_csv.json in Resources */ = {isa = PBXBuildFile; fileRef = 2BE3EAB22C4A7C5B00958CD0 /* pen_stroke_data_07-19-2024-u20_csv.json */; };
+		2BE3EABB2C4A83BE00958CD0 /* pen_stroke_model19.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 2BE3EABA2C4A83BE00958CD0 /* pen_stroke_model19.tflite */; };
+		2BE3EABC2C4A83BE00958CD0 /* pen_stroke_model19.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 2BE3EABA2C4A83BE00958CD0 /* pen_stroke_model19.tflite */; };
+		2BE3EABD2C4A83BE00958CD0 /* pen_stroke_model19.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 2BE3EABA2C4A83BE00958CD0 /* pen_stroke_model19.tflite */; };
 		F73DA3F8E202E9E743623969 /* Pods_penstrokemodel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F2964705EA826B6B8B07071 /* Pods_penstrokemodel.framework */; };
 /* End PBXBuildFile section */
 
@@ -82,8 +82,8 @@
 		2BC4A0082C4695CC00FEBD53 /* pen_stroke_model1stroke_ng.tflite */ = {isa = PBXFileReference; lastKnownFileType = file; path = pen_stroke_model1stroke_ng.tflite; sourceTree = "<group>"; };
 		2BC4A00C2C46ABA700FEBD53 /* pen_stroke_model1stroke.tflite */ = {isa = PBXFileReference; lastKnownFileType = file; path = pen_stroke_model1stroke.tflite; sourceTree = "<group>"; };
 		2BCA1ADA2C43CD0800160B51 /* old_pen_stroke_model2strokes.tflite */ = {isa = PBXFileReference; lastKnownFileType = file; path = old_pen_stroke_model2strokes.tflite; sourceTree = "<group>"; };
-		2BE3EAAE2C4A7B3A00958CD0 /* pen_stroke_model19.tflite */ = {isa = PBXFileReference; lastKnownFileType = file; path = pen_stroke_model19.tflite; sourceTree = "<group>"; };
 		2BE3EAB22C4A7C5B00958CD0 /* pen_stroke_data_07-19-2024-u20_csv.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "pen_stroke_data_07-19-2024-u20_csv.json"; sourceTree = "<group>"; };
+		2BE3EABA2C4A83BE00958CD0 /* pen_stroke_model19.tflite */ = {isa = PBXFileReference; lastKnownFileType = file; path = pen_stroke_model19.tflite; sourceTree = "<group>"; };
 		4953BBCDB4B9F567EDB7E29B /* Pods-penstrokemodel.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-penstrokemodel.release.xcconfig"; path = "Target Support Files/Pods-penstrokemodel/Pods-penstrokemodel.release.xcconfig"; sourceTree = "<group>"; };
 		5F2964705EA826B6B8B07071 /* Pods_penstrokemodel.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_penstrokemodel.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8A516646752F5CFF2FDCB2B6 /* Pods-penstrokemodel.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-penstrokemodel.debug.xcconfig"; path = "Target Support Files/Pods-penstrokemodel/Pods-penstrokemodel.debug.xcconfig"; sourceTree = "<group>"; };
@@ -153,8 +153,8 @@
 				2B8868CB2C384F4300419C85 /* Info.plist */,
 				2BC49FEC2C44BE7900FEBD53 /* pen_stroke_model2strokes.tflite */,
 				2BC4A0082C4695CC00FEBD53 /* pen_stroke_model1stroke_ng.tflite */,
-				2BE3EAAE2C4A7B3A00958CD0 /* pen_stroke_model19.tflite */,
 				2BC4A00C2C46ABA700FEBD53 /* pen_stroke_model1stroke.tflite */,
+				2BE3EABA2C4A83BE00958CD0 /* pen_stroke_model19.tflite */,
 				2BCA1ADA2C43CD0800160B51 /* old_pen_stroke_model2strokes.tflite */,
 				2BE3EAB22C4A7C5B00958CD0 /* pen_stroke_data_07-19-2024-u20_csv.json */,
 			);
@@ -304,8 +304,8 @@
 				2BC4A00D2C46ABA700FEBD53 /* pen_stroke_model1stroke.tflite in Resources */,
 				2B8868C72C384F4300419C85 /* Assets.xcassets in Resources */,
 				2BC4A0092C4695CC00FEBD53 /* pen_stroke_model1stroke_ng.tflite in Resources */,
+				2BE3EABB2C4A83BE00958CD0 /* pen_stroke_model19.tflite in Resources */,
 				2BE3EAB32C4A7C5B00958CD0 /* pen_stroke_data_07-19-2024-u20_csv.json in Resources */,
-				2BE3EAAF2C4A7B3B00958CD0 /* pen_stroke_model19.tflite in Resources */,
 				2BC49FED2C44BE7900FEBD53 /* pen_stroke_model2strokes.tflite in Resources */,
 				2B8868CA2C384F4300419C85 /* Base in Resources */,
 				2BCA1ADB2C43CD0800160B51 /* old_pen_stroke_model2strokes.tflite in Resources */,
@@ -319,8 +319,8 @@
 			files = (
 				2BCA1ADC2C43CD0800160B51 /* old_pen_stroke_model2strokes.tflite in Resources */,
 				2BC49FEE2C44BE7900FEBD53 /* pen_stroke_model2strokes.tflite in Resources */,
-				2BE3EAB02C4A7B3B00958CD0 /* pen_stroke_model19.tflite in Resources */,
 				2BE3EAB42C4A7C5B00958CD0 /* pen_stroke_data_07-19-2024-u20_csv.json in Resources */,
+				2BE3EABC2C4A83BE00958CD0 /* pen_stroke_model19.tflite in Resources */,
 				2BC4A00A2C4695CC00FEBD53 /* pen_stroke_model1stroke_ng.tflite in Resources */,
 				2BC4A00E2C46ABA700FEBD53 /* pen_stroke_model1stroke.tflite in Resources */,
 			);
@@ -332,8 +332,8 @@
 			files = (
 				2BCA1ADD2C43CD0800160B51 /* old_pen_stroke_model2strokes.tflite in Resources */,
 				2BC49FEF2C44BE7900FEBD53 /* pen_stroke_model2strokes.tflite in Resources */,
-				2BE3EAB12C4A7B3B00958CD0 /* pen_stroke_model19.tflite in Resources */,
 				2BE3EAB52C4A7C5B00958CD0 /* pen_stroke_data_07-19-2024-u20_csv.json in Resources */,
+				2BE3EABD2C4A83BE00958CD0 /* pen_stroke_model19.tflite in Resources */,
 				2BC4A00B2C4695CC00FEBD53 /* pen_stroke_model1stroke_ng.tflite in Resources */,
 				2BC4A00F2C46ABA700FEBD53 /* pen_stroke_model1stroke.tflite in Resources */,
 			);
