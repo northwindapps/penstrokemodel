@@ -319,7 +319,7 @@ class CustomCanvasView: PKCanvasView {
                 if rlt1 != nil{
                     //store all outputs on dna
                     self.dnaProducts.append(rlt1!)
-                    if rlt1 != "sla" && rlt1 != "vl" && rlt1 != "j" && rlt1 != "hl" && rlt1 != "bksla" && rlt1 != "vl3" && rlt1 != "opb" && rlt1 != "hlbksla" && rlt1 != "vlsla"  {
+                    if rlt1 != "sla" && rlt1 != "vl" && rlt1 != "hl" && rlt1 != "bksla" && rlt1 != "vl3" && rlt1 != "opb" && rlt1 != "hlbksla" && rlt1 != "vlsla"  {
                         self.products2.append(rlt1!)
                     }
                     //j requires 2 strokes
@@ -352,7 +352,7 @@ class CustomCanvasView: PKCanvasView {
                 
                 
                 
-                if self.dnaProducts.last == "hlbksla" || self.dnaProducts.last == "vlsla" || self.dnaProducts.last == "j" {
+                if self.dnaProducts.last == "hlbksla" || self.dnaProducts.last == "vlsla" {
                     (rlt2,v2) = self.performPrediction(pre_x: dataRepo[dataRepo.count-2].xCoordinates + dataRepo.last!.xCoordinates, pre_y:dataRepo[dataRepo.count-2].yCoordinates + dataRepo.last!.yCoordinates , pre_time: dataRepo[dataRepo.count-2].timeStamps + dataRepo.last!.timeStamps)
                     
                     if (rlt2 != nil) {
@@ -474,14 +474,14 @@ class CustomCanvasView: PKCanvasView {
         if let (label,value) = modelHandler_19.performPrediction19(pre_x: pre_x, pre_y: pre_y, pre_time: pre_time, maxLength: 19) {
             if value > 0.87 {
                 
-                print("Predicted label: \(label)")
-                print("Predicted value: \(value)")
+                print("Predicted label19: \(label)")
+                print("Predicted value19: \(value)")
                 return (label,value)
             }
             if value <= 0.87{
                 //y,i,j,x.. two-stroke group
-                print("NG Predicted label: \(label)")
-                print("NG Predicted value: \(value)")
+                print("NG Predicted label19: \(label)")
+                print("NG Predicted value19: \(value)")
             }
         }else {
             print("Prediction failed")
