@@ -42,7 +42,7 @@ class ViewController: BaseController, PKCanvasViewDelegate,PKToolPickerObserver 
         productsLabel.translatesAutoresizingMaskIntoConstraints = false
         productsLabel.numberOfLines = 0
         productsLabel.textAlignment = .center
-        productsLabel.font = UIFont.systemFont(ofSize: 32)
+        productsLabel.font = UIFont.systemFont(ofSize: 12)
         productsLabel.textColor = .black
         productsLabel.backgroundColor = .clear
 
