@@ -133,6 +133,7 @@ class ViewController: BaseController, PKCanvasViewDelegate,PKToolPickerObserver 
         }
         canvasView.annotation = textField.text ?? ""
         canvasView.addToManager()
+        canvasView.drawing = PKDrawing()
     }
     
     @objc func buttonTapped() {

@@ -5,6 +5,7 @@ class StrokeModelHandler {
     private var interpreter: Interpreter?
     let labels = ["f", "i", "j", "k", "p", "t", "x", "y"]
     let labels_1stroke = ["a", "b", "bksla", "c", "d", "e", "g", "h", "hl", "j", "l", "m", "n", "o", "opb", "q", "r", "s", "sla", "u", "v","vl",  "vl3","w", "z"]
+    let labels19 = ["hlbksla", "j", "vlsla"]
 
     init(modelName: String) {
         guard let modelPath = Bundle.main.path(forResource: modelName, ofType: "tflite") else {
@@ -37,6 +38,18 @@ class StrokeModelHandler {
         if let predictions = predict(inputData: inputData, maxLength: maxLength) {
             if let maxIndex = indexOfMax(predictions), let maxValue = maxValue(predictions) {
                 return (labels_1stroke[maxIndex], maxValue)
+            }
+        }
+        return nil
+    }
+    
+    func performPrediction19(pre_x: [Float], pre_y: [Float], pre_time: [Float], maxLength: Int) -> (String, Float)? {
+
+        let inputData = preprocessInputData(xCoordinates: pre_x, yCoordinates: pre_y, timeStamps: pre_time)
+        
+        if let predictions = predict(inputData: inputData, maxLength: maxLength) {
+            if let maxIndex = indexOfMax(predictions), let maxValue = maxValue(predictions) {
+                return (labels19[maxIndex], maxValue)
             }
         }
         return nil

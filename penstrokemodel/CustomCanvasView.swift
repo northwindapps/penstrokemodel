@@ -17,6 +17,7 @@ class CustomCanvasView: PKCanvasView {
     private var prediction_history:[Float] = []
     var modelHandler: StrokeModelHandler!
     var modelHandler_1stroke: StrokeModelHandler!
+    var modelHandler_19: StrokeModelHandler!
     var products: [String] {
         didSet {
             if let viewController = window?.rootViewController as? ViewController {
@@ -48,7 +49,9 @@ class CustomCanvasView: PKCanvasView {
         // Initialize model handler
         modelHandler = StrokeModelHandler(modelName: "pen_stroke_model2strokes")
         modelHandler_1stroke = StrokeModelHandler(modelName: "pen_stroke_model1stroke")
+        modelHandler_19 = StrokeModelHandler(modelName: "pen_stroke_model19")
         super.init(frame: .zero)
+        
     }
 
     required init?(coder: NSCoder) {
@@ -275,15 +278,21 @@ class CustomCanvasView: PKCanvasView {
     func gcd(){
         DispatchQueue.global(qos: .background).async {
             print("This is run on a background thread")
+            print("count",self.dataManager.timeStamps.count)
+            let cnt = self.dataManager.timeStamps.count
             self.dataManager.timeStamps = self.localTimeStamps
             self.dataManager.x_coordinates = self.localXCoordinates
             self.dataManager.y_coordinates = self.localYCoordinates
             self.dataManager.annotations = self.localAnnotations
             //self.addToManager()
+            var rlt:String?
             
-            // Perform predictions asynchronously
-            let rlt = self.performPrediction1stroke(pre_x: self.dataManager.x_coordinates, pre_y: self.dataManager.y_coordinates, pre_time: self.dataManager.timeStamps)
-
+            if self.dataManager.timeStamps.count < 20 {
+                rlt = self.performPrediction19(pre_x: self.dataManager.x_coordinates, pre_y: self.dataManager.y_coordinates, pre_time: self.dataManager.timeStamps)
+            }else{
+                // Perform predictions asynchronously
+                rlt = self.performPrediction1stroke(pre_x: self.dataManager.x_coordinates, pre_y: self.dataManager.y_coordinates, pre_time: self.dataManager.timeStamps)
+            }
                         
                 
             
@@ -292,6 +301,7 @@ class CustomCanvasView: PKCanvasView {
                 print("This is run on the main thread")
                 if (rlt != nil) {
                     self.products.append(rlt!)
+                    self.products.append("\(cnt)")
                 }
             }
         }
@@ -373,6 +383,26 @@ class CustomCanvasView: PKCanvasView {
                 return label
             }
             if value <= 0.87{
+                //y,i,j,x.. two-stroke group
+                print("NG Predicted label: \(label)")
+                print("NG Predicted value: \(value)")
+            }
+        }else {
+            print("Prediction failed")
+            //DataManagerRepository.shared.removeAllDataManager()
+        }
+        return nil
+    }
+    
+    func performPrediction19(pre_x: [Float], pre_y: [Float], pre_time: [Float]) -> String? {
+        if let (label,value) = modelHandler_19.performPrediction19(pre_x: pre_x, pre_y: pre_y, pre_time: pre_time, maxLength: 19) {
+            if value > 0.85 {
+//                products.removeAll(where: { $0 == " " })
+                print("Predicted label: \(label)")
+                print("Predicted value: \(value)")
+                return label
+            }
+            if value <= 0.85{
                 //y,i,j,x.. two-stroke group
                 print("NG Predicted label: \(label)")
                 print("NG Predicted value: \(value)")
