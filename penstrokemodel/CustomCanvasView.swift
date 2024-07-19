@@ -278,12 +278,13 @@ class CustomCanvasView: PKCanvasView {
     func gcd(){
         DispatchQueue.global(qos: .background).async {
             print("This is run on a background thread")
-            print("count",self.dataManager.timeStamps.count)
             let cnt = self.dataManager.timeStamps.count
+            let cntString = String(cnt)
             self.dataManager.timeStamps = self.localTimeStamps
             self.dataManager.x_coordinates = self.localXCoordinates
             self.dataManager.y_coordinates = self.localYCoordinates
             self.dataManager.annotations = self.localAnnotations
+            print("count",self.dataManager.timeStamps.count)
             //self.addToManager()
             var rlt:String?
             
@@ -298,10 +299,10 @@ class CustomCanvasView: PKCanvasView {
             
 
             DispatchQueue.main.async {
-                print("This is run on the main thread")
                 if (rlt != nil) {
+                    
                     self.products.append(rlt!)
-                    self.products.append("\(cnt)")
+                    self.products.append(cntString)
                 }
             }
         }
@@ -353,13 +354,12 @@ class CustomCanvasView: PKCanvasView {
     
     
     
-    func performPrediction(pre_x: [Float], pre_y: [Float], pre_time: [Float]) -> Bool {
+    func performPrediction(pre_x: [Float], pre_y: [Float], pre_time: [Float]) -> String? {
         if let (label,value) = modelHandler.performPrediction2(pre_x: pre_x, pre_y: pre_y, pre_time: pre_time, maxLength: 57) {
             if value > 0.87{
-                products.append(label)
                 print("Predicted label: \(label)")
                 print("Predicted value: \(value)")
-                return true
+                return label
                 
             }
             if value <= 0.87{
@@ -371,7 +371,7 @@ class CustomCanvasView: PKCanvasView {
             print("Prediction failed")
             deleteData()
         }
-        return false
+        return nil
     }
     
     func performPrediction1stroke(pre_x: [Float], pre_y: [Float], pre_time: [Float]) -> String? {
@@ -398,14 +398,14 @@ class CustomCanvasView: PKCanvasView {
         if let (label,value) = modelHandler_19.performPrediction19(pre_x: pre_x, pre_y: pre_y, pre_time: pre_time, maxLength: 19) {
             if value > 0.85 {
 //                products.removeAll(where: { $0 == " " })
-                print("Predicted label: \(label)")
-                print("Predicted value: \(value)")
+                print("Predicted label19: \(label)")
+                print("Predicted value19: \(value)")
                 return label
             }
             if value <= 0.85{
                 //y,i,j,x.. two-stroke group
-                print("NG Predicted label: \(label)")
-                print("NG Predicted value: \(value)")
+                print("NG Predicted label19: \(label)")
+                print("NG Predicted value19: \(value)")
             }
         }else {
             print("Prediction failed")

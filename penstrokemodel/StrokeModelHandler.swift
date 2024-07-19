@@ -5,7 +5,8 @@ class StrokeModelHandler {
     private var interpreter: Interpreter?
     let labels = ["f", "i", "j", "k", "p", "t", "x", "y"]
     let labels_1stroke = ["a", "b", "bksla", "c", "d", "e", "g", "h", "hl", "j", "l", "m", "n", "o", "opb", "q", "r", "s", "sla", "u", "v","vl",  "vl3","w", "z"]
-    let labels19 = ["hlbksla", "j", "vlsla"]
+    let labels19 = ["c", "hlbksla", "j", "s", "v", "vlsla"]
+    
 
     init(modelName: String) {
         guard let modelPath = Bundle.main.path(forResource: modelName, ofType: "tflite") else {
