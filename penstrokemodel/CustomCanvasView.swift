@@ -335,7 +335,7 @@ class CustomCanvasView: PKCanvasView {
                     (rlt,v) = self.performPrediction1stroke(pre_x: dataRepo.last!.xCoordinates, pre_y:dataRepo.last!.yCoordinates , pre_time: dataRepo.last!.timeStamps)
                 }
                 
-                if rlt0 == "sla" || rlt0 == "vl" || rlt0 == "j" || rlt0 == "hl" || rlt0 == "bksla" || rlt0 == "vl3" || rlt0 == "opb"{
+                if rlt0 == "hlbksla" || rlt0 == "vlsla" || rlt0 == "j" {
                     (rlt2,v2) = self.performPrediction(pre_x: dataRepo[dataRepo.count-2].xCoordinates + dataRepo.last!.xCoordinates, pre_y:dataRepo[dataRepo.count-2].yCoordinates + dataRepo.last!.yCoordinates , pre_time: dataRepo[dataRepo.count-2].timeStamps + dataRepo.last!.timeStamps)
                 }
                 
