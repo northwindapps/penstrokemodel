@@ -3,7 +3,8 @@ import Foundation
 
 class StrokeModelHandler {
     private var interpreter: Interpreter?
-    let labels =   ["a","e","g","n","o","r","s","u","v"]
+    let labels =   ["0","1","V","U","L","W","6","(",")","S","N","M","2","3","6","7","8","9","C","O"]
+    
     //["a", "b", "c", "d", "e", "f", "h", "i", "j", "k", "m", "n", "o", "p", "q", "r", "t", "u", "v", "w"]
 
     init(modelName: String) {
@@ -13,19 +14,21 @@ class StrokeModelHandler {
         
         do {
             self.interpreter = try Interpreter(modelPath: modelPath)
+            try self.interpreter!.allocateTensors()
+            
         } catch {
             print("Error initializing interpreter: \(error)")
         }
     }
     
-    func performPrediction(pre_x: [Float], pre_y: [Float], pre_time: [Float], maxLength: Int) -> (String, Float)? {
+    func performPrediction(pre_x: [Float], pre_y: [Float], maxLength: Int) -> (String, Float)? {
         let xCoordinates: [Float] = pre_x
         let yCoordinates: [Float] = pre_y
-        let timeStamps: [Float] = pre_time
 
-        let inputData = preprocessInputData(xCoordinates: xCoordinates, yCoordinates: yCoordinates, timeStamps: timeStamps)
+        let inputData = preprocessInputData(xCoordinates: xCoordinates, yCoordinates: yCoordinates)
         if let predictions = predict(inputData: inputData, maxLength: maxLength) {
             if let maxIndex = indexOfMax(predictions), let maxValue = maxValue(predictions) {
+                print("maxIndex",maxIndex)
                 return (labels[maxIndex], maxValue)
             }
         }
@@ -45,117 +48,103 @@ class StrokeModelHandler {
         let maxVal = input.max()!
         return input.map { ($0 - minVal) / (maxVal - minVal) }
     }
-    
-    private func calculateVelocity(x: [Float], y: [Float], timestamps: [Float]) -> [Float] {
-        guard x.count > 1 && y.count > 1 && timestamps.count > 1 else {
-            print("Insufficient data to calculate velocity. Each input array must have at least 2 elements.")
-            return []
-        }
-        
-        var velocity = [Float]()
-        
-        for i in 0..<(x.count - 1) {
-            let delta_x = x[i + 1] - x[i]
-            let delta_y = y[i + 1] - y[i]
-            let delta_t = timestamps[i + 1] - timestamps[i]
-            
-            // Avoid division by zero in delta_t
-            let delta_t_safe = delta_t == 0 ? 1e-10 : delta_t
-            
-            let vel = sqrt(pow(delta_x, 2) + pow(delta_y, 2)) / delta_t_safe
-            velocity.append(vel)
-        }
-        
-        // Add velocity for the last element as a simple approach
-        if x.count == y.count && y.count == timestamps.count {
-            velocity.append(0.0) // Or handle this case based on your specific requirements
-        }
-        
-        return velocity
-    }
-    
-    private func calculateVelocity2(x: [Float], y: [Float], timestamps: [Float]) -> (x_vel: [Float], y_vel: [Float]) {
-        guard x.count > 1 && y.count > 1 && timestamps.count > 1 else {
-            print("Insufficient data to calculate velocity. Each input array must have at least 2 elements.")
-            return ([], [])
-        }
-        
-        var x_vel = [Float]()
-        var y_vel = [Float]()
-        
-        for i in 0..<(x.count - 1) {
-            let delta_x = x[i + 1] - x[i]
-            let delta_y = y[i + 1] - y[i]
-            let delta_t = timestamps[i + 1] - timestamps[i]
-            
-            // Avoid division by zero in delta_t
-            let delta_t_safe = delta_t == 0 ? 1e-10 : delta_t
-            
-            let vel_x = delta_x / delta_t_safe
-            let vel_y = delta_y / delta_t_safe
-            
-            x_vel.append(vel_x)
-            y_vel.append(vel_y)
-        }
-        
-        x_vel.append(0.0)
-        y_vel.append(0.0)
-        
-        return (x_vel, y_vel)
-    }
 
-    private func preprocessInputData(xCoordinates: [Float], yCoordinates: [Float], timeStamps: [Float]) -> [Float32] {
-        guard xCoordinates.count == yCoordinates.count && yCoordinates.count == timeStamps.count else {
+    private func preprocessInputData(xCoordinates: [Float], yCoordinates: [Float]) -> [Float32] {
+        guard xCoordinates.count == yCoordinates.count else {
             fatalError("Input arrays must have the same length")
         }
         
         let normalizedXCoordinates = minMaxScale(input: xCoordinates)
         let normalizedYCoordinates = minMaxScale(input: yCoordinates)
-        let normalizedTimeStamps = minMaxScale(input: timeStamps)
+        //let normalizedTimeStamps = minMaxScale(input: timeStamps)
         
-        var (vx_ary, vy_ary) = calculateVelocity2(x: normalizedXCoordinates, y: normalizedYCoordinates, timestamps: normalizedTimeStamps)
+        //var (vx_ary, vy_ary) = calculateVelocity2(x: normalizedXCoordinates, y: normalizedYCoordinates, timestamps: normalizedTimeStamps)
         
 
         var inputData: [Float32] = []
         for i in 0..<xCoordinates.count {
-            inputData.append(contentsOf: [Float32(normalizedXCoordinates[i]), Float32(normalizedYCoordinates[i]), Float32(normalizedTimeStamps[i]), Float32(vx_ary[i]), Float32(vy_ary[i])])
+            inputData.append(contentsOf: [Float32(normalizedXCoordinates[i]), Float32(normalizedYCoordinates[i])])
         }
         return inputData
     }
 
-    private func predict(inputData: [Float32], maxLength: Int) -> [Float32]? {
+    func predict(inputData: [Float32], maxLength: Int) -> [Float32]? {
         guard let interpreter = self.interpreter else {
             fatalError("Interpreter is not initialized.")
         }
         
         do {
+            let inputTensor = try interpreter.input(at: 0)
+                let shape = inputTensor.shape
+                print("Expected input shape: \(shape)")
+            
+            // Step 1: Padding the input data to match the expected model input shape
+//            var dummyData = createDummyData(maxLength: maxLength)
             let paddedInputData = padInputData(inputData, toLength: maxLength)
-            try interpreter.resizeInput(at: 0, to: [1, maxLength, 5])
+            
+            // Step 2: Resizing the input tensor to match the required shape (e.g., [1, maxLength, 2])
+            try interpreter.resizeInput(at: 0, to: [1, maxLength, 2])  // Adjust for your model's expected shape
+            
+            // Step 3: Allocate tensors (make sure this is called after input resize)
             try interpreter.allocateTensors()
             
-          
+            // Debugging input data
+//            print("Input data shape: \(paddedInputData!.count)")  // Check size
+//            print("Padded input data: \(paddedInputData)")  // Print padded data for verification
+
+            // Ensure that paddedInputData is of the correct size
+            let inputDataBytes = paddedInputData!.withUnsafeBufferPointer { Data(buffer: $0) }
+//            print("Input Data Bytes: \(inputDataBytes)")  // Check if data is being correctly passed
+
             
-            let inputDataBytes = paddedInputData?.withUnsafeBufferPointer { Data(buffer: $0) }
-            if inputDataBytes == nil{
-                return nil
-            }
-            try interpreter.copy(inputDataBytes!, toInputAt: 0)
+            // Step 5: Copy the input data into the model's input tensor
+            try interpreter.copy(inputDataBytes, toInputAt: 0)
+            
+            try interpreter.allocateTensors()
+            
+            // Step 6: Run inference
             try interpreter.invoke()
             
+            // Step 7: Retrieve the output tensor
             let outputTensor = try interpreter.output(at: 0)
-            let outputData: [Float32] = [Float32](unsafeData: outputTensor.data) ?? []
             
-            return outputData
+            // Step 8: Copy the output data to a buffer
+            let outputSize = outputTensor.shape.dimensions.reduce(1, { x, y in x * y })
+            let outputData = UnsafeMutableBufferPointer<Float32>.allocate(capacity: outputSize)
+            
+            // Step 9: Copy the output tensor data to the buffer
+            outputTensor.data.copyBytes(to: outputData)
+            
+            // Step 10: Convert the output data into a usable format (if needed)
+            let resultData = Array(outputData)
+            
+            return resultData
             
         } catch {
             print("Error during inference: \(error)")
             return nil
         }
     }
+    
+    // Create dummy data with random values (2 features per time step)
+    func createDummyData(maxLength: Int) -> [Float32] {
+        // Generate dummy data with random values between 0 and 1
+        var dummyData: [Float32] = []
+        
+        for _ in 0..<maxLength {
+            let x = Float32.random(in: 0...1)
+            let y = Float32.random(in: 0...1)
+            dummyData.append(x)
+            dummyData.append(y)
+        }
+        
+        return dummyData
+    }
+
 
     private func padInputData(_ inputData: [Float32], toLength length: Int) -> [Float32]? {
         let paddingValue: Float32 = 0.0
-        let currentLength = inputData.count / 5 // Assuming each entry has x, y, timestamp, and velocity x and y
+        let currentLength = inputData.count / 2 // Assuming each entry has x, y
         let requiredPadding = length - currentLength
         
         var paddedData = inputData
@@ -163,12 +152,12 @@ class StrokeModelHandler {
         // Check if padding is needed
         guard requiredPadding > 0 else {
             print("No padding required or invalid length specified.")
-            return nil
+            return paddedData
         }
         
         // Pad the data
         for _ in 0..<requiredPadding {
-            paddedData.append(contentsOf: [paddingValue, paddingValue, paddingValue, paddingValue, paddingValue]) // Assuming four values per entry x,y,time,velocity
+            paddedData.append(contentsOf: [paddingValue, paddingValue]) // Assuming four values per entry x,y,time,velocity
         }
         
         return paddedData

@@ -16,7 +16,7 @@ class CustomCanvasView: PKCanvasView {
     var modelHandler: StrokeModelHandler!
     var products: [String] {
         didSet {
-            print("Products changed to: \(products)")
+//            print("Products changed to: \(products)")
             if let viewController = window?.rootViewController as? ViewController {
                 viewController.updateProductsLabel()
             }
@@ -132,7 +132,7 @@ class CustomCanvasView: PKCanvasView {
             // Print aggregated data
             print("Data Count: \(aggregatedData.count)")
             
-            performPrediction(pre_x: dataManager.x_coordinates.compactMap{Float($0)}, pre_y: dataManager.y_coordinates.compactMap{Float($0)}, pre_time: dataManager.timeStamps.compactMap{Float($0)})
+            performPrediction(pre_x: dataManager.x_coordinates.compactMap{Float($0)}, pre_y: dataManager.y_coordinates.compactMap{Float($0)})
             
             self.deleteData()
             
@@ -211,8 +211,8 @@ class CustomCanvasView: PKCanvasView {
         dataManager.frame_heights.removeAll()
     }
     
-    func performPrediction(pre_x: [Float], pre_y: [Float], pre_time: [Float]) {
-            if let (label,value) = modelHandler.performPrediction(pre_x: pre_x, pre_y: pre_y, pre_time: pre_time, maxLength: 99) {
+    func performPrediction(pre_x: [Float], pre_y: [Float]) {
+            if let (label,value) = modelHandler.performPrediction(pre_x: pre_x, pre_y: pre_y, maxLength: 74) {
                 
 //                if value > 0.80{
                     print("Predicted label: \(label)")
