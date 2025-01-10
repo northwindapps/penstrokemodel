@@ -29,10 +29,275 @@ class StrokeModelHandler {
         if let predictions = predict(inputData: inputData, maxLength: maxLength) {
             if let maxIndex = indexOfMax(predictions), let maxValue = maxValue(predictions) {
                 print("maxIndex",maxIndex)
-                return (labels[maxIndex], maxValue)
+                var labelStr = labels[maxIndex]
+                var curveCounter = 0
+                if labelStr == "1" || labelStr == "(" || labelStr == ")"{
+//                if labelStr == "1" || labelStr == ")"{
+                    // Convert to Double
+                    let xCoordinatesDouble = xCoordinates.compactMap { Double($0) }
+                    let yCoordinatesDouble = yCoordinates.compactMap { Double($0) }
+
+                    // Calculate curvature for each set of 3 consecutive points
+                    var curvatures: [Double] = []
+                    for i in 0..<(xCoordinatesDouble.count - 2) {
+                        let curvature = calculateCurvature(
+                            x1: xCoordinatesDouble[i], y1: yCoordinatesDouble[i],
+                            x2: xCoordinatesDouble[i + 1], y2: yCoordinatesDouble[i + 1],
+                            x3: xCoordinatesDouble[i + 2], y3: yCoordinatesDouble[i + 2]
+                        )
+                        curvatures.append(curvature)
+                    }
+                    
+                    //max and min
+                    let min_x = xCoordinatesDouble.min() ?? 0.0
+                    let max_x = xCoordinatesDouble.max() ?? 0.0
+                    let min_y = yCoordinatesDouble.min() ?? 0.0
+                    let max_y = yCoordinatesDouble.max() ?? 0.0
+                    
+                    var min20 = [Float]()
+                    var max20 = [Float]()
+                    for i in 0..<(xCoordinatesDouble.count) {
+                        if (xCoordinatesDouble[i] - min_x) < 10{
+                            min20.append(Float(xCoordinatesDouble[i]))
+                        }
+                        
+                        if (max_x - xCoordinatesDouble[i]) < 10{
+                            max20.append(Float(xCoordinatesDouble[i]))
+                        }
+                    }
+                    
+                    if xCoordinates.count > 1{
+                        if max_x - min_x > 20.0 && xCoordinates.first! > Float(min_x) && xCoordinates.last! > Float(min_x){
+                            return ("(", maxValue)
+                        }
+                        
+                        if max_x - min_x > 20.0 && xCoordinates.first! < Float(max_x) && xCoordinates.last! < Float(max_x){
+                            return (")", maxValue)
+                        }
+                        
+                        let minIdx = xCoordinates.firstIndex(of: Float(min_x))
+                        if max_x - min_x > 20.0 && minIdx! > xCoordinates.count/2{
+                            return ("j", maxValue)
+                        }
+                        
+                        if Double(min20.count) / Double(xCoordinatesDouble.count) > 0.4 && max_x - min_x > 20.0{
+                            
+                            if Double(max_y - min_y) / Double(max_x - min_x) < 2.0{
+                                return ("C", maxValue)
+                            }
+                            return ("(", maxValue)
+                        }
+                        
+                        return ("1", maxValue)
+                    }
+                }
+                
+                if labelStr == "C"{
+                    // Convert to Double
+                    let xCoordinatesDouble = xCoordinates.compactMap { Double($0) }
+                    let yCoordinatesDouble = yCoordinates.compactMap { Double($0) }
+
+                    // Calculate curvature for each set of 3 consecutive points
+                    var curvatures: [Double] = []
+                    for i in 0..<(xCoordinatesDouble.count - 2) {
+                        let curvature = calculateCurvature(
+                            x1: xCoordinatesDouble[i], y1: yCoordinatesDouble[i],
+                            x2: xCoordinatesDouble[i + 1], y2: yCoordinatesDouble[i + 1],
+                            x3: xCoordinatesDouble[i + 2], y3: yCoordinatesDouble[i + 2]
+                        )
+                        curvatures.append(curvature)
+                    }
+                    
+                    //max and min
+                    let min_x = xCoordinatesDouble.min() ?? 0.0
+                    let max_x = xCoordinatesDouble.max() ?? 0.0
+                    let min_y = yCoordinatesDouble.min() ?? 0.0
+                    let max_y = yCoordinatesDouble.max() ?? 0.0
+                    
+                    var min20 = [Float]()
+                    var max20 = [Float]()
+                    for i in 0..<(xCoordinatesDouble.count) {
+                        if (xCoordinatesDouble[i] - min_x) < 10{
+                            min20.append(Float(xCoordinatesDouble[i]))
+                        }
+                        
+                        if (max_x - xCoordinatesDouble[i]) < 10{
+                            max20.append(Float(xCoordinatesDouble[i]))
+                        }
+                    }
+                    
+                    if xCoordinates.count > 1{
+                        if Double(min20.count) / Double(xCoordinatesDouble.count) > 0.4 && max_x - min_x > 20.0{
+                            
+                            if Double(max_y - min_y) / Double(max_x - min_x) < 2.0{
+                                return ("C", maxValue)
+                            }
+                            return ("(", maxValue)
+                        }
+                        return ("C", maxValue)
+                    }
+                }
+                
+                if labelStr == "7"{
+                    // Convert to Double
+                    let xCoordinatesDouble = xCoordinates.compactMap { Double($0) }
+                    let yCoordinatesDouble = yCoordinates.compactMap { Double($0) }
+                    
+                    // Calculate curvature for each set of 3 consecutive points
+                    var curvatures: [Double] = []
+                    for i in 0..<(xCoordinatesDouble.count - 2) {
+                        let curvature = calculateCurvature(
+                            x1: xCoordinatesDouble[i], y1: yCoordinatesDouble[i],
+                            x2: xCoordinatesDouble[i + 1], y2: yCoordinatesDouble[i + 1],
+                            x3: xCoordinatesDouble[i + 2], y3: yCoordinatesDouble[i + 2]
+                        )
+                        curvatures.append(curvature)
+                    }
+                    
+                    if xCoordinates.count > 1{
+                        //max and min
+                        let min_x = xCoordinatesDouble.min() ?? 0.0
+                        let max_x = xCoordinatesDouble.max() ?? 0.0
+                        let min_y = yCoordinatesDouble.min() ?? 0.0
+                        let max_y = yCoordinatesDouble.max() ?? 0.0
+                        
+                        if max_x - min_x < 20.0 { //25.0{
+                            return ("1", maxValue)
+                        }
+                        
+                        if xCoordinates.first! - xCoordinates.last! > 10.0{
+                            return (")", maxValue)
+                        }
+                        
+                        if Double(max_y - min_y)/Double(max_x - min_x) > 3{
+                            return (")", maxValue)
+                        }
+                        
+                        
+                        return ("7", maxValue)
+                    }
+                }
+                
+                if labelStr == "L"{
+                    // Convert to Double
+                    let xCoordinatesDouble = xCoordinates.compactMap { Double($0) }
+                    let yCoordinatesDouble = yCoordinates.compactMap { Double($0) }
+                    
+                    // Calculate curvature for each set of 3 consecutive points
+                    var curvatures: [Double] = []
+                    for i in 0..<(xCoordinatesDouble.count - 2) {
+                        let curvature = calculateCurvature(
+                            x1: xCoordinatesDouble[i], y1: yCoordinatesDouble[i],
+                            x2: xCoordinatesDouble[i + 1], y2: yCoordinatesDouble[i + 1],
+                            x3: xCoordinatesDouble[i + 2], y3: yCoordinatesDouble[i + 2]
+                        )
+                        curvatures.append(curvature)
+                    }
+                    
+                    if yCoordinates.count > 1{
+                        //max and min
+                        let min_y = yCoordinatesDouble.min() ?? 0.0
+                        let max_y = yCoordinatesDouble.max() ?? 0.0
+                        var max20 = [Float]()
+                        for i in 0..<(yCoordinatesDouble.count) {
+                            if max_y - Double(yCoordinates[i]) < 15.0{
+                                max20.append(yCoordinates[i])
+                            }
+                        }
+                        if (Double(max20.count) / Double(yCoordinatesDouble.count)) < 0.6 { //25.0{
+                            return ("V", maxValue)
+                        }
+                        
+                        return ("L", maxValue)
+                    }
+                }
+                
+                if labelStr == "S"{
+                    // Convert to Double
+                    let xCoordinatesDouble = xCoordinates.compactMap { Double($0) }
+                    let yCoordinatesDouble = yCoordinates.compactMap { Double($0) }
+                    
+                    // Calculate curvature for each set of 3 consecutive points
+                    var curvatures: [Double] = []
+                    for i in 0..<(xCoordinatesDouble.count - 2) {
+                        let curvature = calculateCurvature(
+                            x1: xCoordinatesDouble[i], y1: yCoordinatesDouble[i],
+                            x2: xCoordinatesDouble[i + 1], y2: yCoordinatesDouble[i + 1],
+                            x3: xCoordinatesDouble[i + 2], y3: yCoordinatesDouble[i + 2]
+                        )
+                        curvatures.append(curvature)
+                    }
+                    
+                    if xCoordinates.count > 1{
+                        //max and min
+                        let min_x = xCoordinatesDouble.min() ?? 0.0
+                        let max_x = xCoordinatesDouble.max() ?? 0.0
+                        let min_y = yCoordinatesDouble.min() ?? 0.0
+                        let max_y = yCoordinatesDouble.max() ?? 0.0
+                        
+                        
+                        if abs(xCoordinates.first! - xCoordinates.last!) < 20.0{
+                            return ("(", maxValue)
+                        }
+                        
+                        if Double(max_y - min_y)/Double(max_x - min_x) > 3.0{
+                            return ("6", maxValue)
+                        }
+                        
+                        if max_x - min_x < 15.0{
+                            return ("6", maxValue)
+                        }
+                        
+                        return ("S", maxValue)
+                    }
+                }
+                if labelStr == "3"{
+                    // Convert to Double
+                    let xCoordinatesDouble = xCoordinates.compactMap { Double($0) }
+                    let yCoordinatesDouble = yCoordinates.compactMap { Double($0) }
+                    
+                    // Calculate curvature for each set of 3 consecutive points
+                    var curvatures: [Double] = []
+                    for i in 0..<(xCoordinatesDouble.count - 2) {
+                        let curvature = calculateCurvature(
+                            x1: xCoordinatesDouble[i], y1: yCoordinatesDouble[i],
+                            x2: xCoordinatesDouble[i + 1], y2: yCoordinatesDouble[i + 1],
+                            x3: xCoordinatesDouble[i + 2], y3: yCoordinatesDouble[i + 2]
+                        )
+                        curvatures.append(curvature)
+                    }
+                    
+                    if xCoordinates.count > 1{
+                        //max and min
+                        let min_x = xCoordinatesDouble.min() ?? 0.0
+                        let max_x = xCoordinatesDouble.max() ?? 0.0
+                        
+                        
+                        
+                        if xCoordinates.first! - xCoordinates.last! > 25.0{
+                            return ("S", maxValue)
+                        }
+                        return ("3", maxValue)
+                    }
+                }
+                return (labelStr, maxValue)
             }
         }
         return nil
+    }
+    
+    func calculateCurvature(x1: Double, y1: Double, x2: Double, y2: Double, x3: Double, y3: Double) -> Double {
+        // Calculate the distances between points
+        let d1 = sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2)) // Distance between P1 and P2
+        let d2 = sqrt(pow(x3 - x2, 2) + pow(y3 - y2, 2)) // Distance between P2 and P3
+        let d3 = sqrt(pow(x3 - x1, 2) + pow(y3 - y1, 2)) // Distance between P1 and P3
+
+        // Calculate the curvature using the determinant-based formula
+        let numerator = 2 * abs((x1 - x2) * (y2 - y3) - (x2 - x3) * (y1 - y2))
+        let denominator = d1 * d2 * d3
+
+        // Return curvature
+        return denominator != 0 ? numerator / denominator : 0
     }
 
     private func indexOfMax(_ array: [Float32]) -> Int? {
